@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inicio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f7fb;
+    --surface: #ffffff;
+    --ink: #1b2233;
+    --muted: #5d6679;
+    --line: #dde2ec;
+    --es-red: #aa151b;
+    --es-yellow: #f1bf00;
+    --us-blue: #0a3161;
+    --us-red: #b31942;
+    --ok: #1d7a46;
+    --mid: #a76a00;
+    --focus: #0a6cff;
+    --alert-bg: #fff1f2;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #11151d;
+      --surface: #1a1f2a;
+      --ink: #e9edf4;
+      --muted: #9aa3b5;
+      --line: #2b3242;
+      --ok: #4cc283;
+      --mid: #e0a43a;
+      --alert-bg: #3a1a20;
+    }
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Bricolage Grotesque", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { font-size: 1rem; font-weight: 600; color: var(--muted); margin: 0 0 14px; text-align: center; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 12px; }
+  .card {
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .muted { color: var(--muted); }
+  .small { font-size: 0.85rem; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Banderas y relojes ---------- */
+  .flags { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 12px; }
+  .flag-block { text-align: center; }
+  .flag {
+    display: block; width: 100%; aspect-ratio: 3 / 2; height: auto;
+    border-radius: 6px; box-shadow: 0 0 0 1px var(--line);
+  }
+  .clock {
+    font-size: clamp(2rem, 9vw, 3.6rem); font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1; margin-top: 12px; font-variant-numeric: tabular-nums;
+  }
+  .clock-place { font-weight: 600; margin-top: 4px; }
+  .clock-date { color: var(--muted); font-size: 0.9rem; }
+  .gap { color: var(--muted); font-size: 0.85rem; text-align: center; padding-bottom: 30px; white-space: nowrap; }
+  .gap strong { display: block; color: var(--ink); font-size: 1.1rem; }
+  .call {
+    margin: 14px auto 0; text-align: center; font-weight: 600;
+    display: flex; justify-content: center; align-items: center; gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex: none; }
+  .call.good .dot { background: var(--ok); }
+  .call.mid .dot { background: var(--mid); }
+  .call.bad .dot { background: var(--us-red); }
+
+  /* ---------- Avisos oficiales ---------- */
+  .alerts { margin-top: 16px; }
+  .alert {
+    background: var(--alert-bg); border: 1px solid var(--us-red); border-left-width: 6px;
+    border-radius: 10px; padding: 12px 14px; margin-top: 8px;
+  }
+  .alert strong { display: block; }
+  .alert details { margin-top: 6px; font-size: 0.85rem; }
+  .alert summary { cursor: pointer; color: var(--muted); }
+  .alert p { white-space: pre-line; margin: 6px 0 0; }
+
+  /* ---------- Vuelta a España ---------- */
+  .trip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .trip-days { font-size: clamp(2.2rem, 10vw, 3.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .trip-days span { font-size: 1rem; font-weight: 600; letter-spacing: 0; color: var(--muted); margin-left: 6px; }
+  .bar {
+    position: relative; height: 14px; border-radius: 7px; margin: 14px 0 8px; overflow: hidden;
+    background: linear-gradient(90deg, var(--es-red) 0 25%, var(--es-yellow) 25% 75%, var(--es-red) 75% 100%);
+  }
+  .bar-done {
+    position: absolute; inset: 0 auto 0 0; width: 0%;
+    background: repeating-linear-gradient(180deg, var(--us-red) 0 2px, #ffffff 2px 4px);
+    border-right: 2px solid var(--ink);
+    transition: width 0.8s ease;
+  }
+  @media (prefers-reduced-motion: reduce) { .bar-done { transition: none; } }
+  .trip-pct { display: flex; justify-content: space-between; gap: 12px; font-size: 0.9rem; }
+  .trip-pct strong { font-size: 1.2rem; }
+
+  /* ---------- Formularios comunes ---------- */
+  .conv-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+  .field label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+  .box {
+    display: flex; align-items: baseline; border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 12px; background: var(--paper);
+  }
+  .box:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .sym { font-weight: 700; color: var(--muted); margin-right: 6px; white-space: nowrap; }
+  input, select {
+    width: 100%; min-width: 0; border: 0; background: transparent; color: var(--ink);
+    font: inherit; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; outline: none;
+  }
+  select {
+    font-size: 1rem; font-weight: 600; border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px; background: var(--paper); -webkit-appearance: none; appearance: none;
+  }
+  select:focus-visible { outline: 2px solid var(--focus); }
+  .equals { font-size: 1.4rem; color: var(--muted); padding-top: 20px; }
+  .rate { margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+  .rate.warn { color: var(--us-red); }
+
+  /* ---------- Cuenta ---------- */
+  .bill-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+  .chip {
+    font: inherit; font-weight: 600; color: var(--ink); background: var(--paper);
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--us-blue); border-color: var(--us-blue); color: #ffffff; }
+  .chip-custom { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 12px; background: var(--paper); }
+  .chip-custom input { width: 3.2em; font-size: 1rem; font-weight: 600; }
+  .bill-out { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .bill-line { display: flex; justify-content: space-between; padding: 3px 0; font-variant-numeric: tabular-nums; }
+  .bill-total { font-size: 1.35rem; font-weight: 800; }
+
+  /* ---------- Unidades ---------- */
+  .unit-row { margin-top: 12px; }
+
+  /* ---------- Tiempo ---------- */
+  .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .weather { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 6px; border-top: 4px solid var(--es-red); }
+  .weather.us { border-top-color: var(--us-blue); }
+  .weather ul, .list { list-style: none; margin: 0; padding: 0; }
+  .weather li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .weather li:first-child { border-top: 0; padding-top: 0; }
+  .w-name { font-weight: 600; }
+  .w-temp {
+    font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; text-align: right;
+    grid-row: span 2; align-self: center; font-variant-numeric: tabular-nums;
+  }
+  .w-temp small { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+  .w-desc { font-size: 0.85rem; color: var(--muted); }
+  .w-extra { grid-column: 1 / -1; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .status { font-size: 0.85rem; color: var(--muted); padding: 8px 0; }
+  .status.warn { color: var(--us-red); }
+
+  /* ---------- Previsión detallada ---------- */
+  .sun { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .sun div { background: var(--paper); border-radius: 10px; padding: 8px 10px; }
+  .sun strong { display: block; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+  .days { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .day { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .day-name { font-weight: 700; }
+  .day-temp { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 4px 0; }
+  .day-temp span { color: var(--muted); font-weight: 600; font-size: 1rem; }
+  .day p { margin: 2px 0; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .day p.snow { color: var(--us-blue); font-weight: 700; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .day p.snow { color: #8fb4ff; } }
+  .alert-status { margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+
+  /* ---------- Fechas ---------- */
+  .list li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); }
+  .list li:first-child { border-top: 0; }
+  .tag { font-size: 0.75rem; font-weight: 700; border-radius: 6px; padding: 2px 7px; color: #ffffff; min-width: 2.6em; text-align: center; }
+  .tag.ES { background: var(--es-red); }
+  .tag.US { background: var(--us-blue); }
+  .tag.Otro { background: var(--muted); }
+  .when { text-align: right; font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  footer { margin-top: 24px; text-align: center; font-size: 0.8rem; color: var(--muted); }
+  footer button {
+    font: inherit; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+  }
+  button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  @media (max-width: 520px) {
+    main { padding: 14px 10px 32px; }
+    .flags { gap: 8px; }
+    .gap { padding-bottom: 24px; font-size: 0.75rem; }
+    .clock-date { font-size: 0.8rem; }
+    .card { padding: 14px 12px; }
+    .conv-row { grid-template-columns: 1fr; }
+    .equals { display: none; }
+    .weather-grid { gap: 8px; }
+    .weather { padding: 10px 10px 4px; }
+    .weather h2 { font-size: 1rem; }
+    .w-name { font-size: 0.9rem; }
+    .w-temp { font-size: 1.3rem; }
+    .w-desc, .w-extra { font-size: 0.75rem; }
+    .days { gap: 6px; }
+    .day { padding: 8px; }
+    .day-temp { font-size: 1.1rem; }
+    .sun strong { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Inicio</h1>
+
+  <!-- Banderas y hora -->
+  <section aria-label="Hora local">
+    <div class="flags">
+      <div class="flag-block">
+        <svg class="flag" viewBox="0 0 750 500" role="img" aria-label="Bandera de España">
+          <rect width="750" height="500" fill="#aa151b"/>
+          <rect y="125" width="750" height="250" fill="#f1bf00"/>
+        </svg>
+        <div class="clock" id="clock-es">--:--</div>
+        <div class="clock-place" id="place-es"></div>
+        <div class="clock-date" id="date-es"></div>
+      </div>
+      <div class="gap" id="gap"></div>
+      <div class="flag-block">
+        <svg class="flag" id="flag-us" viewBox="0 0 750 500" role="img" aria-label="Bandera de Estados Unidos"></svg>
+        <div class="clock" id="clock-us">--:--</div>
+        <div class="clock-place" id="place-us"></div>
+        <div class="clock-date" id="date-us"></div>
+      </div>
+    </div>
+    <p class="call" id="call"><span class="dot" aria-hidden="true"></span><span id="call-text"></span></p>
+  </section>
+
+  <!-- Avisos oficiales: solo aparece si hay alguno activo -->
+  <section class="alerts" id="alerts" aria-live="polite" hidden></section>
+
+  <!-- Vuelta a España -->
+  <section class="card" aria-labelledby="trip-title">
+    <div class="trip-head">
+      <h2 id="trip-title">Vuelta a España</h2>
+      <span class="muted small" id="trip-date"></span>
+    </div>
+    <div class="trip-days" id="trip-days">--</div>
+    <div id="trip-progress">
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="bar"><div class="bar-done" id="bar-done"></div></div>
+      <div class="trip-pct"><span>Llevas <strong id="pct-done">--</strong></span><span>Queda <strong id="pct-left">--</strong></span></div>
+    </div>
+    <p class="small muted" id="trip-note" hidden></p>
+  </section>
+
+  <!-- Euros y dólares -->
+  <section class="card" aria-labelledby="conv-title">
+    <h2 id="conv-title">Euros y dólares</h2>
+    <div class="conv-row">
+      <div class="field">
+        <label for="eur">Euros</label>
+        <div class="box"><span class="sym">€</span><input id="eur" inputmode="decimal" autocomplete="off" value="1"></div>
+      </div>
+      <div class="equals" aria-hidden="true">=</div>
+      <div class="field">
+        <label for="usd">Dólares</label>
+        <div class="box"><span class="sym">$</span><input id="usd" inputmode="decimal" autocomplete="off"></div>
+      </div>
+    </div>
+    <div class="rate" id="rate">Cargando tipo de cambio…</div>
+  </section>
+
+  <!-- Cuenta con impuesto y propina -->
+  <section class="card" aria-labelledby="bill-title">
+    <h2 id="bill-title">Cuenta en tienda o restaurante</h2>
+    <div class="bill-grid">
+      <div class="field">
+        <label for="bill">Precio sin impuestos</label>
+        <div class="box"><span class="sym">$</span><input id="bill" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      </div>
+      <div class="field">
+        <label for="people">Personas</label>
+        <div class="box"><input id="people" inputmode="numeric" autocomplete="off" value="1"></div>
+      </div>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Propina"></div>
+    <div class="bill-out" id="bill-out">
+      <div class="bill-line"><span id="tax-label">Impuesto</span><span id="tax-val">—</span></div>
+      <div class="bill-line"><span id="tip-label">Propina</span><span id="tip-val">—</span></div>
+      <div class="bill-line bill-total"><span>Total</span><span id="total-val">—</span></div>
+      <div class="bill-line muted"><span id="pp-label">Por persona</span><span id="pp-val">—</span></div>
+      <div class="bill-line muted"><span>Total en euros</span><span id="total-eur">—</span></div>
+    </div>
+    <p class="small muted">La propina se calcula sobre el precio sin impuestos, como es habitual. Fuera de restaurantes y servicios no se deja propina.</p>
+  </section>
+
+  <!-- Conversor de unidades -->
+  <section class="card" aria-labelledby="units-title">
+    <h2 id="units-title">Conversor de unidades</h2>
+    <label class="small muted" for="unit-pair">Qué quieres convertir</label>
+    <select id="unit-pair"></select>
+    <div class="conv-row unit-row">
+      <div class="field">
+        <label for="unit-a" id="unit-a-label"></label>
+        <div class="box"><input id="unit-a" inputmode="decimal" autocomplete="off" value="1"></div>
+      </div>
+      <div class="equals" aria-hidden="true">=</div>
+      <div class="field">
+        <label for="unit-b" id="unit-b-label"></label>
+        <div class="box"><input id="unit-b" inputmode="decimal" autocomplete="off"></div>
+      </div>
+    </div>
+    <p class="small muted" id="unit-note"></p>
+  </section>
+
+  <!-- Tiempo -->
+  <section class="weather-grid">
+    <div class="weather es">
+      <h2 id="title-es">España</h2>
+      <ul id="list-es"><li class="status">Cargando el tiempo…</li></ul>
+    </div>
+    <div class="weather us">
+      <h2 id="title-us">Estados Unidos</h2>
+      <ul id="list-us"><li class="status">Cargando el tiempo…</li></ul>
+    </div>
+  </section>
+
+  <!-- Previsión detallada -->
+  <section class="card" aria-labelledby="detail-title">
+    <h2 id="detail-title">Próximos días</h2>
+    <div class="sun" id="sun"></div>
+    <div class="days" id="days"><p class="status">Cargando previsión…</p></div>
+    <p class="alert-status" id="alert-status">Comprobando avisos oficiales…</p>
+  </section>
+
+  <!-- Fechas -->
+  <section class="card" aria-labelledby="dates-title">
+    <h2 id="dates-title">Próximas fechas</h2>
+    <ul class="list" id="dates"></ul>
+  </section>
+
+  <footer>
+    <p id="updated"></p>
+    <button type="button" id="refresh">Actualizar ahora</button>
+  </footer>
+</main>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var CFG = window.CONFIG;
+  if (!CFG) {
+    document.getElementById("title").textContent =
+      "No se ha podido leer config.js. Revisa comas y comillas en ese archivo.";
+    return;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  document.title = CFG.titulo || "Inicio";
+  $("title").textContent = CFG.titulo || "";
+  $("title-es").textContent = CFG.espana.titulo;
+  $("title-us").textContent = CFG.usa.titulo;
+  $("detail-title").textContent = "Próximos días en " + CFG.detalle.nombre;
+
+  /* ---------- Formatos ---------- */
+  var nf2 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var nfMax2 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 2 });
+  var nf1 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  function usd(v) { return nf2.format(v) + " $"; }
+  function eur(v) { return nf2.format(v) + " €"; }
+  function parseNum(s) {
+    s = String(s).replace(/\s/g, "");
+    if (s === "") return NaN;
+    if (s.indexOf(",") !== -1) s = s.replace(/\./g, "").replace(",", ".");
+    return parseFloat(s);
+  }
+  function selectOnFocus(el) { el.addEventListener("focus", function () { el.select(); }); }
+
+  /* ---------- Bandera de EE. UU. en 3:2 ---------- */
+  (function drawUSFlag() {
+    var W = 750, H = 500, stripe = H / 13, cw = W * 0.4, ch = stripe * 7, html = "";
+    for (var i = 0; i < 13; i++) {
+      html += '<rect y="' + (i * stripe) + '" width="' + W + '" height="' + (stripe + 0.5) +
+              '" fill="' + (i % 2 === 0 ? "#b31942" : "#ffffff") + '"/>';
+    }
+    html += '<rect width="' + cw + '" height="' + ch + '" fill="#0a3161"/>';
+    var R = H * 0.0308;
+    function star(cx, cy) {
+      var pts = [];
+      for (var k = 0; k < 10; k++) {
+        var r = k % 2 === 0 ? R : R * 0.382, a = -Math.PI / 2 + k * Math.PI / 5;
+        pts.push((cx + r * Math.cos(a)).toFixed(2) + "," + (cy + r * Math.sin(a)).toFixed(2));
+      }
+      return '<polygon fill="#ffffff" points="' + pts.join(" ") + '"/>';
+    }
+    for (var row = 0; row < 9; row++) {
+      var y = (row + 1) * ch / 10, n = row % 2 === 0 ? 6 : 5;
+      for (var c = 0; c < n; c++) {
+        html += star(row % 2 === 0 ? (2 * c + 1) * cw / 12 : (2 * c + 2) * cw / 12, y);
+      }
+    }
+    $("flag-us").innerHTML = html;
+  })();
+
+  /* ---------- Relojes y hora para llamar ---------- */
+  var tzES = CFG.espana.zonaHoraria, tzUS = CFG.usa.zonaHoraria;
+  $("place-es").textContent = CFG.espana.ciudadReloj;
+  $("place-us").textContent = CFG.usa.ciudadReloj;
+
+  function fmtTime(tz, d) {
+    return new Intl.DateTimeFormat("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: tz }).format(d || new Date());
+  }
+  function fmtDate(tz) {
+    return new Intl.DateTimeFormat("es-ES", { weekday: "long", day: "numeric", month: "short", timeZone: tz }).format(new Date());
+  }
+  function hourIn(tz) {
+    return +new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: tz }).format(new Date());
+  }
+  function offsetMinutes(tz) {
+    var d = new Date(), p = {};
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+    }).formatToParts(d).forEach(function (x) { p[x.type] = x.value; });
+    return Math.round((Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - d.getTime()) / 60000);
+  }
+  function tickClocks() {
+    $("clock-es").textContent = fmtTime(tzES);
+    $("clock-us").textContent = fmtTime(tzUS);
+    $("date-es").textContent = fmtDate(tzES);
+    $("date-us").textContent = fmtDate(tzUS);
+    var diff = (offsetMinutes(tzES) - offsetMinutes(tzUS)) / 60;
+    $("gap").innerHTML = "<strong>" + (Number.isInteger(diff) ? diff : diff.toFixed(1)) + " h</strong>de diferencia";
+
+    var h = hourIn(tzES), cls, txt;
+    if (h >= 9 && h < 22)      { cls = "good"; txt = "Buena hora para llamar a España"; }
+    else if (h >= 7 && h < 9)  { cls = "mid";  txt = "En España es temprano, mejor un mensaje"; }
+    else if (h >= 22)          { cls = "mid";  txt = "En España ya es tarde, mejor un mensaje"; }
+    else                       { cls = "bad";  txt = "En España es de madrugada, mejor no llamar"; }
+    $("call").className = "call " + cls;
+    $("call-text").textContent = txt;
+  }
+  tickClocks();
+  setInterval(tickClocks, 15000);
+
+  /* ---------- Vuelta a España ---------- */
+  function localDate(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function renderTrip() {
+    var v = CFG.viaje;
+    $("trip-title").textContent = v.texto;
+    var end = localDate(v.fechaVuelta), now = new Date();
+    $("trip-date").textContent = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "long", year: "numeric" }).format(end) +
+                                 (v.fechaAproximada ? " (aprox.)" : "");
+    var daysLeft = Math.max(0, Math.ceil((end - now) / 86400000));
+    if (daysLeft === 0) {
+      $("trip-days").innerHTML = "Hoy<span>es el día</span>";
+    } else {
+      $("trip-days").innerHTML = daysLeft + "<span>" + (daysLeft === 1 ? "día" : "días") +
+        " · " + Math.floor(daysLeft / 7) + " semanas</span>";
+    }
+    if (!v.fechaLlegada) {
+      $("trip-progress").hidden = true;
+      $("trip-note").hidden = false;
+      $("trip-note").textContent = "Para ver el porcentaje, añade la fecha de llegada (fechaLlegada) en config.js.";
+      return;
+    }
+    var start = localDate(v.fechaLlegada);
+    var total = end - start;
+    var done = Math.min(100, Math.max(0, (now - start) / total * 100));
+    $("trip-progress").hidden = false;
+    $("trip-note").hidden = true;
+    $("pct-done").textContent = nf1.format(done) + " %";
+    $("pct-left").textContent = nf1.format(100 - done) + " %";
+    $("bar-done").style.width = done.toFixed(2) + "%";
+    $("bar").setAttribute("aria-valuenow", done.toFixed(1));
+    $("bar").setAttribute("aria-label", "Llevas el " + nf1.format(done) + " % del tiempo");
+  }
+  renderTrip();
+  setInterval(renderTrip, 60 * 60 * 1000);
+
+  /* ---------- Euros y dólares ---------- */
+  var rate = null;
+  var eurIn = $("eur"), usdIn = $("usd"), rateEl = $("rate");
+  function fromEUR() { var v = parseNum(eurIn.value); usdIn.value = isNaN(v) || rate === null ? "" : nf2.format(v * rate); }
+  function fromUSD() { var v = parseNum(usdIn.value); eurIn.value = isNaN(v) || rate === null ? "" : nf2.format(v / rate); }
+  eurIn.addEventListener("input", fromEUR);
+  usdIn.addEventListener("input", fromUSD);
+  selectOnFocus(eurIn); selectOnFocus(usdIn);
+
+  function showRate(r, source, date, warn) {
+    rate = r;
+    var f4 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+    rateEl.className = "rate" + (warn ? " warn" : "");
+    rateEl.textContent = "1 € = " + f4.format(r) + " $   ·   1 $ = " + f4.format(1 / r) + " €   ·   " +
+                         source + (date ? " (" + date + ")" : "");
+    fromEUR(); calcBill(); convertUnits("a");
+  }
+  function loadRate() {
+    var base = CFG.divisa.base, to = CFG.divisa.destino;
+    fetch("https://api.frankfurter.app/latest?from=" + base + "&to=" + to)
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) { showRate(d.rates[to], "Tipo de referencia del BCE", d.date, false); })
+      .catch(function () {
+        return fetch("https://open.er-api.com/v6/latest/" + base)
+          .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+          .then(function (d) { showRate(d.rates[to], "ExchangeRate-API", (d.time_last_update_utc || "").slice(5, 16), false); });
+      })
+      .catch(function () {
+        showRate(CFG.divisa.tasaRespaldo, "Sin conexión con el servicio de cambio: se usa la tasa manual de config.js", "", true);
+      });
+  }
+
+  /* ---------- Cuenta con impuesto y propina ---------- */
+  var taxPct = CFG.cuenta.impuestoVentas, tipPct = CFG.cuenta.propinas[2] != null ? CFG.cuenta.propinas[2] : 0;
+  var billIn = $("bill"), peopleIn = $("people"), chips = $("chips");
+  selectOnFocus(billIn); selectOnFocus(peopleIn);
+
+  CFG.cuenta.propinas.forEach(function (p) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.dataset.pct = p;
+    b.textContent = p === 0 ? "Sin propina" : p + " %";
+    b.addEventListener("click", function () { tipPct = p; customTip.value = ""; markChips(); calcBill(); });
+    chips.appendChild(b);
+  });
+  var customWrap = document.createElement("label");
+  customWrap.className = "chip-custom";
+  customWrap.innerHTML = '<span class="small muted">Otra</span><input inputmode="decimal" autocomplete="off" aria-label="Otra propina en %"><span class="small muted">%</span>';
+  chips.appendChild(customWrap);
+  var customTip = customWrap.querySelector("input");
+  customTip.addEventListener("input", function () {
+    var v = parseNum(customTip.value);
+    if (!isNaN(v)) { tipPct = v; markChips(); calcBill(); }
+  });
+  function markChips() {
+    Array.prototype.forEach.call(chips.querySelectorAll(".chip"), function (b) {
+      b.setAttribute("aria-pressed", String(+b.dataset.pct === tipPct && customTip.value === ""));
+    });
+  }
+  function calcBill() {
+    var base = parseNum(billIn.value), n = Math.max(1, Math.round(parseNum(peopleIn.value)) || 1);
+    $("tax-label").textContent = "Impuesto (" + nfMax2.format(taxPct) + " %)";
+    $("tip-label").textContent = "Propina (" + nfMax2.format(tipPct) + " %)";
+    if (isNaN(base)) {
+      ["tax-val", "tip-val", "total-val", "pp-val", "total-eur"].forEach(function (id) { $(id).textContent = "—"; });
+      return;
+    }
+    var tax = base * taxPct / 100, tip = base * tipPct / 100, total = base + tax + tip;
+    $("tax-val").textContent = usd(tax);
+    $("tip-val").textContent = usd(tip);
+    $("total-val").textContent = usd(total);
+    $("pp-label").textContent = "Por persona (" + n + ")";
+    $("pp-val").textContent = usd(total / n);
+    $("total-eur").textContent = rate ? eur(total / rate) : "—";
+  }
+  billIn.addEventListener("input", calcBill);
+  peopleIn.addEventListener("input", calcBill);
+  markChips(); calcBill();
+
+  /* ---------- Conversor de unidades ---------- */
+  function lin(f) { return { toB: function (x) { return x * f; }, toA: function (x) { return x / f; } }; }
+  var UNITS = [
+    { a: "Millas", b: "Kilómetros", conv: lin(1.609344) },
+    { a: "Grados Fahrenheit", b: "Grados Celsius", conv: {
+        toB: function (x) { return (x - 32) * 5 / 9; }, toA: function (x) { return x * 9 / 5 + 32; } } },
+    { a: "Libras (lb)", b: "Kilos", conv: lin(0.45359237) },
+    { a: "Onzas de peso (oz)", b: "Gramos", conv: lin(28.349523125) },
+    { a: "Onzas líquidas (fl oz)", b: "Mililitros", conv: lin(29.5735295625) },
+    { a: "Tazas (cup)", b: "Mililitros", conv: lin(236.5882365), note: "Taza estadounidense de cocina." },
+    { a: "Cucharadas (tbsp)", b: "Mililitros", conv: lin(14.78676478125) },
+    { a: "Galones", b: "Litros", conv: lin(3.785411784) },
+    { a: "Pies", b: "Metros", conv: lin(0.3048) },
+    { a: "Pulgadas", b: "Centímetros", conv: lin(2.54) },
+    { a: "Millas por hora", b: "Km por hora", conv: lin(1.609344), note: "Los límites de velocidad en EE. UU. están en millas por hora." },
+    { a: "Gasolina en $/galón", b: "Gasolina en €/litro", conv: {
+        toB: function (x) { return rate ? x / 3.785411784 / rate : NaN; },
+        toA: function (x) { return rate ? x * 3.785411784 * rate : NaN; } },
+      note: "Usa el tipo de cambio de la calculadora de euros." }
+  ];
+  var pairSel = $("unit-pair"), uA = $("unit-a"), uB = $("unit-b");
+  UNITS.forEach(function (u, i) {
+    var o = document.createElement("option");
+    o.value = i; o.textContent = u.a + " y " + u.b.toLowerCase();
+    pairSel.appendChild(o);
+  });
+  function convertUnits(from) {
+    var u = UNITS[+pairSel.value];
+    $("unit-a-label").textContent = u.a;
+    $("unit-b-label").textContent = u.b;
+    $("unit-note").textContent = u.note || "";
+    if (from === "a") {
+      var a = parseNum(uA.value), rb = u.conv.toB(a);
+      uB.value = isNaN(rb) ? "" : nfMax2.format(rb);
+    } else {
+      var b = parseNum(uB.value), ra = u.conv.toA(b);
+      uA.value = isNaN(ra) ? "" : nfMax2.format(ra);
+    }
+  }
+  pairSel.addEventListener("change", function () { convertUnits("a"); });
+  uA.addEventListener("input", function () { convertUnits("a"); });
+  uB.addEventListener("input", function () { convertUnits("b"); });
+  selectOnFocus(uA); selectOnFocus(uB);
+  convertUnits("a");
+
+  /* ---------- Tiempo (Open-Meteo) ---------- */
+  var WMO = {
+    0: "Despejado", 1: "Casi despejado", 2: "Parcialmente nuboso", 3: "Cubierto",
+    45: "Niebla", 48: "Niebla con escarcha",
+    51: "Llovizna débil", 53: "Llovizna", 55: "Llovizna intensa", 56: "Llovizna helada", 57: "Llovizna helada intensa",
+    61: "Lluvia débil", 63: "Lluvia", 65: "Lluvia intensa", 66: "Lluvia helada", 67: "Lluvia helada intensa",
+    71: "Nieve débil", 73: "Nieve", 75: "Nieve intensa", 77: "Granos de nieve",
+    80: "Chubascos débiles", 81: "Chubascos", 82: "Chubascos fuertes", 85: "Chubascos de nieve", 86: "Chubascos de nieve fuertes",
+    95: "Tormenta", 96: "Tormenta con granizo", 99: "Tormenta con granizo fuerte"
+  };
+  function toF(c) { return c * 9 / 5 + 32; }
+  function t(c, unit) { return c == null ? "—" : Math.round(unit === "fahrenheit" ? toF(c) : c) + "°"; }
+  function otherUnit(u) { return u === "fahrenheit" ? "celsius" : "fahrenheit"; }
+  function unitLetter(u) { return u === "fahrenheit" ? "F" : "C"; }
+
+  function fetchJSON(url) {
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  }
+
+  function renderList(listId, region, data) {
+    var ul = $(listId), unit = region.unidad, other = otherUnit(unit);
+    ul.innerHTML = "";
+    region.lugares.forEach(function (lugar, i) {
+      var d = data[i], li = document.createElement("li");
+      if (!d || !d.current) {
+        li.innerHTML = '<span class="w-name"></span><span class="status warn">Sin datos</span>';
+      } else {
+        var cur = d.current, day = d.daily;
+        var both = region.mostrarAmbasUnidades ? "<small>" + t(cur.temperature_2m, other) + unitLetter(other) + "</small>" : "";
+        var rain = day.precipitation_probability_max[0];
+        li.innerHTML =
+          '<span class="w-name"></span>' +
+          '<span class="w-temp">' + t(cur.temperature_2m, unit) + both + "</span>" +
+          '<span class="w-desc">' + (WMO[cur.weather_code] || "—") + "</span>" +
+          '<span class="w-extra">Sensación ' + t(cur.apparent_temperature, unit) +
+          "   Máx " + t(day.temperature_2m_max[0], unit) + "   Mín " + t(day.temperature_2m_min[0], unit) +
+          "   Lluvia " + (rain == null ? "—" : rain + " %") + "</span>";
+      }
+      li.querySelector(".w-name").textContent = lugar.nombre;
+      ul.appendChild(li);
+    });
+  }
+
+  function fetchWeather(region) {
+    var lats = region.lugares.map(function (l) { return l.lat; }).join(",");
+    var lons = region.lugares.map(function (l) { return l.lon; }).join(",");
+    return fetchJSON("https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
+      "&current=temperature_2m,apparent_temperature,weather_code" +
+      "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+      "&forecast_days=1&timezone=auto")
+      .then(function (d) { return Array.isArray(d) ? d : [d]; });
+  }
+
+  /* ---------- Previsión detallada ---------- */
+  function hhmm(iso) { return iso ? iso.slice(11, 16) : "—"; }
+  function minutesOf(iso) { var p = iso.slice(11, 16).split(":"); return +p[0] * 60 + +p[1]; }
+  function dayLabel(dateStr, i) {
+    if (i === 0) return "Hoy";
+    if (i === 1) return "Mañana";
+    var p = dateStr.split("-");
+    var s = new Intl.DateTimeFormat("es-ES", { weekday: "long", timeZone: "UTC" }).format(new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])));
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  function loadDetail() {
+    var D = CFG.detalle, unit = CFG.usa.unidad, other = otherUnit(unit), both = CFG.usa.mostrarAmbasUnidades;
+    fetchJSON("https://api.open-meteo.com/v1/forecast?latitude=" + D.lat + "&longitude=" + D.lon +
+      "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_min," +
+      "snowfall_sum,precipitation_probability_max,sunrise,sunset" +
+      "&forecast_days=" + (D.dias || 3) + "&timezone=" + encodeURIComponent(D.zonaHoraria) + "&wind_speed_unit=kmh")
+      .then(function (d) {
+        var dl = d.daily, cur = d.current;
+        var light = minutesOf(dl.sunset[0]) - minutesOf(dl.sunrise[0]);
+        $("sun").innerHTML =
+          '<div><span class="small muted">Amanecer</span><strong>' + hhmm(dl.sunrise[0]) + "</strong></div>" +
+          '<div><span class="small muted">Atardecer</span><strong>' + hhmm(dl.sunset[0]) + "</strong></div>" +
+          '<div><span class="small muted">Sensación ahora</span><strong>' + t(cur.apparent_temperature, unit) +
+          (both ? ' <span class="small muted">' + t(cur.apparent_temperature, other) + unitLetter(other) + "</span>" : "") +
+          "</strong></div>";
+
+        var html = "";
+        dl.time.forEach(function (day, i) {
+          var snow = dl.snowfall_sum[i], rain = dl.precipitation_probability_max[i];
+          html += '<div class="day">' +
+            '<div class="day-name">' + dayLabel(day, i) + "</div>" +
+            '<div class="day-temp">' + t(dl.temperature_2m_max[i], unit) + " <span>/ " + t(dl.temperature_2m_min[i], unit) + "</span></div>" +
+            "<p>" + (WMO[dl.weather_code[i]] || "—") + "</p>" +
+            "<p>Sensación mín " + t(dl.apparent_temperature_min[i], unit) + "</p>" +
+            "<p>Precipitación " + (rain == null ? "—" : rain + " %") + "</p>" +
+            (snow > 0 ? '<p class="snow">Nieve ' + nf1.format(snow) + " cm</p>" : "<p>Sin nieve</p>") +
+            "</div>";
+        });
+        $("days").innerHTML = html;
+        $("detail-title").textContent = "Próximos días en " + D.nombre + "  ·  " +
+          Math.floor(light / 60) + " h " + (light % 60) + " min de luz hoy";
+      })
+      .catch(function () {
+        $("days").innerHTML = '<p class="status warn">No se ha podido cargar la previsión. Pulsa Actualizar ahora.</p>';
+      });
+  }
+
+  /* ---------- Avisos oficiales (National Weather Service) ---------- */
+  var EVENTS = {
+    "Winter Storm Warning": "Aviso de tormenta invernal",
+    "Winter Storm Watch": "Vigilancia de tormenta invernal",
+    "Winter Weather Advisory": "Precaución por tiempo invernal",
+    "Blizzard Warning": "Aviso de ventisca",
+    "Lake Effect Snow Warning": "Aviso de nevada por efecto lago",
+    "Lake Effect Snow Advisory": "Precaución por nevada por efecto lago",
+    "Ice Storm Warning": "Aviso de tormenta de hielo",
+    "Extreme Cold Warning": "Aviso de frío extremo",
+    "Extreme Cold Watch": "Vigilancia de frío extremo",
+    "Cold Weather Advisory": "Precaución por frío",
+    "Wind Chill Warning": "Aviso de frío extremo por viento",
+    "Wind Chill Advisory": "Precaución por frío por viento",
+    "Freeze Warning": "Aviso de helada",
+    "Freeze Watch": "Vigilancia de helada",
+    "Frost Advisory": "Precaución por escarcha",
+    "Dense Fog Advisory": "Precaución por niebla densa",
+    "Wind Advisory": "Precaución por viento",
+    "High Wind Warning": "Aviso de viento fuerte",
+    "Severe Thunderstorm Warning": "Aviso de tormenta fuerte",
+    "Severe Thunderstorm Watch": "Vigilancia de tormenta fuerte",
+    "Tornado Warning": "Aviso de tornado: busca refugio",
+    "Tornado Watch": "Vigilancia de tornado",
+    "Flood Warning": "Aviso de inundación",
+    "Flash Flood Warning": "Aviso de inundación repentina",
+    "Flood Advisory": "Precaución por inundación",
+    "Heat Advisory": "Precaución por calor",
+    "Excessive Heat Warning": "Aviso de calor extremo",
+    "Special Weather Statement": "Comunicado meteorológico especial",
+    "Air Quality Alert": "Alerta por calidad del aire"
+  };
+  function loadAlerts() {
+    var D = CFG.detalle, box = $("alerts"), status = $("alert-status");
+    fetchJSON("https://api.weather.gov/alerts/active?point=" + D.lat + "," + D.lon)
+      .then(function (d) {
+        var feats = (d.features || []).map(function (f) { return f.properties; });
+        box.innerHTML = "";
+        if (!feats.length) {
+          box.hidden = true;
+          status.textContent = "Sin avisos oficiales activos en " + D.nombre + " (National Weather Service).";
+          return;
+        }
+        feats.forEach(function (p) {
+          var div = document.createElement("div");
+          div.className = "alert";
+          var until = p.ends || p.expires;
+          var untilTxt = until ? " hasta " + new Intl.DateTimeFormat("es-ES", {
+            weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone: D.zonaHoraria
+          }).format(new Date(until)) : "";
+          div.innerHTML = "<strong></strong><span class='small'></span>" +
+            "<details><summary>Texto oficial en inglés</summary><p></p></details>";
+          div.querySelector("strong").textContent = (EVENTS[p.event] || p.event) + untilTxt;
+          div.querySelector("span").textContent = p.event + (p.areaDesc ? " · " + p.areaDesc : "");
+          div.querySelector("p").textContent = (p.headline ? p.headline + "\n\n" : "") + (p.description || "") +
+            (p.instruction ? "\n\n" + p.instruction : "");
+          box.appendChild(div);
+        });
+        box.hidden = false;
+        status.textContent = feats.length + (feats.length === 1 ? " aviso activo" : " avisos activos") +
+          " en " + D.nombre + ": detalle arriba del todo.";
+      })
+      .catch(function () {
+        box.hidden = true;
+        status.textContent = "No se han podido comprobar los avisos oficiales en este momento.";
+      });
+  }
+
+  /* ---------- Fechas ---------- */
+  function renderDates() {
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var items = (CFG.fechas || [])
+      .map(function (f) { return { d: localDate(f.fecha), f: f }; })
+      .filter(function (x) { return x.d >= today; })
+      .sort(function (a, b) { return a.d - b.d; })
+      .slice(0, CFG.mostrarFechas || 6);
+    var ul = $("dates");
+    ul.innerHTML = "";
+    if (!items.length) {
+      ul.innerHTML = '<li><span></span><span class="muted">No hay fechas próximas. Añádelas en config.js.</span><span></span></li>';
+      return;
+    }
+    var dfmt = new Intl.DateTimeFormat("es-ES", { weekday: "short", day: "numeric", month: "short" });
+    items.forEach(function (x) {
+      var days = Math.round((x.d - today) / 86400000);
+      var li = document.createElement("li");
+      var label = x.f.pais === "ES" ? "ES" : x.f.pais === "US" ? "US" : "Otro";
+      li.innerHTML = '<span class="tag ' + label + '">' + (label === "Otro" ? "Nota" : label) + "</span>" +
+        "<span></span>" +
+        '<span class="when">' + dfmt.format(x.d) + "<br>" + (days === 0 ? "hoy" : days === 1 ? "mañana" : "en " + days + " días") + "</span>";
+      li.children[1].textContent = x.f.nombre;
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- Carga y refresco ---------- */
+  function loadWeatherAll() {
+    [["list-es", CFG.espana], ["list-us", CFG.usa]].forEach(function (pair) {
+      fetchWeather(pair[1])
+        .then(function (data) { renderList(pair[0], pair[1], data); })
+        .catch(function () {
+          $(pair[0]).innerHTML = '<li class="status warn">No se ha podido cargar el tiempo. Comprueba la conexión y pulsa Actualizar ahora.</li>';
+        });
+    });
+    loadDetail();
+    loadAlerts();
+    $("updated").textContent = "Actualizado a las " + fmtTime(tzUS) + " de " + CFG.usa.ciudadReloj +
+      " (" + fmtTime(tzES) + " en " + CFG.espana.ciudadReloj + ")";
+  }
+  var lastLoad = Date.now();
+  function loadAll() { lastLoad = Date.now(); loadRate(); loadWeatherAll(); renderTrip(); renderDates(); }
+  $("refresh").addEventListener("click", loadAll);
+  loadAll();
+  setInterval(loadWeatherAll, 30 * 60 * 1000);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && Date.now() - lastLoad > 10 * 60 * 1000) loadAll();
+  });
+})();
+</script>
+</body>
+</html>
