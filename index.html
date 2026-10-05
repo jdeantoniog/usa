@@ -99,23 +99,26 @@
   .alert summary { cursor: pointer; color: var(--muted); }
   .alert p { white-space: pre-line; margin: 6px 0 0; }
 
-  /* ---------- Vuelta a España ---------- */
-  .trip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-  .trip-days { font-size: clamp(2.2rem, 10vw, 3.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-  .trip-days span { font-size: 1rem; font-weight: 600; letter-spacing: 0; color: var(--muted); margin-left: 6px; }
+  /* ---------- Vuelta a España (una línea) ---------- */
+  .trip {
+    margin-top: 16px; display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 8px 12px; font-size: 0.9rem; white-space: nowrap;
+  }
+  .trip-label { font-weight: 700; }
+  .trip-info { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .trip-info strong { color: var(--ink); }
   .bar {
-    position: relative; height: 14px; border-radius: 7px; margin: 14px 0 8px; overflow: hidden;
+    position: relative; flex: 1; min-width: 40px; height: 8px; border-radius: 4px; overflow: hidden;
     background: linear-gradient(90deg, var(--es-red) 0 25%, var(--es-yellow) 25% 75%, var(--es-red) 75% 100%);
   }
+  .bar[hidden] { display: none; }
   .bar-done {
     position: absolute; inset: 0 auto 0 0; width: 0%;
-    background: repeating-linear-gradient(180deg, var(--us-red) 0 2px, #ffffff 2px 4px);
-    border-right: 2px solid var(--ink);
+    background: var(--us-blue); border-right: 2px solid var(--ink);
     transition: width 0.8s ease;
   }
   @media (prefers-reduced-motion: reduce) { .bar-done { transition: none; } }
-  .trip-pct { display: flex; justify-content: space-between; gap: 12px; font-size: 0.9rem; }
-  .trip-pct strong { font-size: 1.2rem; }
 
   /* ---------- Formularios comunes ---------- */
   .conv-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
@@ -212,6 +215,11 @@
     .card { padding: 14px 12px; }
     .conv-row { grid-template-columns: 1fr; }
     .equals { display: none; }
+    .conv-row.money-row { grid-template-columns: 1fr auto 1fr; gap: 6px; }
+    .money-row .equals { display: block; font-size: 1.1rem; }
+    .money-row .box { padding: 8px 8px; }
+    .money-row input { font-size: 1.25rem; }
+    .trip { font-size: 0.82rem; gap: 8px; padding: 7px 10px; }
     .weather-grid { gap: 8px; }
     .weather { padding: 10px 10px 4px; }
     .weather h2 { font-size: 1rem; }
@@ -227,8 +235,6 @@
 </head>
 <body>
 <main>
-  <h1 id="title">Inicio</h1>
-
   <!-- Banderas y hora -->
   <section aria-label="Hora local">
     <div class="flags">
@@ -255,32 +261,25 @@
   <!-- Avisos oficiales: solo aparece si hay alguno activo -->
   <section class="alerts" id="alerts" aria-live="polite" hidden></section>
 
-  <!-- Vuelta a España -->
-  <section class="card" aria-labelledby="trip-title">
-    <div class="trip-head">
-      <h2 id="trip-title">Vuelta a España</h2>
-      <span class="muted small" id="trip-date"></span>
-    </div>
-    <div class="trip-days" id="trip-days">--</div>
-    <div id="trip-progress">
-      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="bar"><div class="bar-done" id="bar-done"></div></div>
-      <div class="trip-pct"><span>Llevas <strong id="pct-done">--</strong></span><span>Queda <strong id="pct-left">--</strong></span></div>
-    </div>
-    <p class="small muted" id="trip-note" hidden></p>
+  <!-- Vuelta a España: una línea -->
+  <section class="trip" id="trip" aria-label="Vuelta a España">
+    <span class="trip-label" id="trip-title">Vuelta a España</span>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="bar"><div class="bar-done" id="bar-done"></div></div>
+    <span class="trip-info" id="trip-info">--</span>
   </section>
 
   <!-- Euros y dólares -->
   <section class="card" aria-labelledby="conv-title">
-    <h2 id="conv-title">Euros y dólares</h2>
-    <div class="conv-row">
+    <h2 id="conv-title">Dólares y euros</h2>
+    <div class="conv-row money-row">
       <div class="field">
-        <label for="eur">Euros</label>
-        <div class="box"><span class="sym">€</span><input id="eur" inputmode="decimal" autocomplete="off" value="1"></div>
+        <label for="usd">Dólares</label>
+        <div class="box"><span class="sym">$</span><input id="usd" inputmode="decimal" autocomplete="off" value="20"></div>
       </div>
       <div class="equals" aria-hidden="true">=</div>
       <div class="field">
-        <label for="usd">Dólares</label>
-        <div class="box"><span class="sym">$</span><input id="usd" inputmode="decimal" autocomplete="off"></div>
+        <label for="eur">Euros</label>
+        <div class="box"><span class="sym">€</span><input id="eur" inputmode="decimal" autocomplete="off"></div>
       </div>
     </div>
     <div class="rate" id="rate">Cargando tipo de cambio…</div>
@@ -310,25 +309,6 @@
     <p class="small muted">La propina se calcula sobre el precio sin impuestos, como es habitual. Fuera de restaurantes y servicios no se deja propina.</p>
   </section>
 
-  <!-- Conversor de unidades -->
-  <section class="card" aria-labelledby="units-title">
-    <h2 id="units-title">Conversor de unidades</h2>
-    <label class="small muted" for="unit-pair">Qué quieres convertir</label>
-    <select id="unit-pair"></select>
-    <div class="conv-row unit-row">
-      <div class="field">
-        <label for="unit-a" id="unit-a-label"></label>
-        <div class="box"><input id="unit-a" inputmode="decimal" autocomplete="off" value="1"></div>
-      </div>
-      <div class="equals" aria-hidden="true">=</div>
-      <div class="field">
-        <label for="unit-b" id="unit-b-label"></label>
-        <div class="box"><input id="unit-b" inputmode="decimal" autocomplete="off"></div>
-      </div>
-    </div>
-    <p class="small muted" id="unit-note"></p>
-  </section>
-
   <!-- Tiempo -->
   <section class="weather-grid">
     <div class="weather es">
@@ -347,6 +327,25 @@
     <div class="sun" id="sun"></div>
     <div class="days" id="days"><p class="status">Cargando previsión…</p></div>
     <p class="alert-status" id="alert-status">Comprobando avisos oficiales…</p>
+  </section>
+
+  <!-- Conversor de unidades -->
+  <section class="card" aria-labelledby="units-title">
+    <h2 id="units-title">Conversor de unidades</h2>
+    <label class="small muted" for="unit-pair">Qué quieres convertir</label>
+    <select id="unit-pair"></select>
+    <div class="conv-row unit-row">
+      <div class="field">
+        <label for="unit-a" id="unit-a-label"></label>
+        <div class="box"><input id="unit-a" inputmode="decimal" autocomplete="off" value="1"></div>
+      </div>
+      <div class="equals" aria-hidden="true">=</div>
+      <div class="field">
+        <label for="unit-b" id="unit-b-label"></label>
+        <div class="box"><input id="unit-b" inputmode="decimal" autocomplete="off"></div>
+      </div>
+    </div>
+    <p class="small muted" id="unit-note"></p>
   </section>
 
   <!-- Fechas -->
@@ -368,14 +367,13 @@
 
   var CFG = window.CONFIG;
   if (!CFG) {
-    document.getElementById("title").textContent =
-      "No se ha podido leer config.js. Revisa comas y comillas en ese archivo.";
+    document.body.insertAdjacentHTML("afterbegin",
+      "<p style='padding:16px'>No se ha podido leer config.js. Revisa comas y comillas en ese archivo.</p>");
     return;
   }
   function $(id) { return document.getElementById(id); }
 
   document.title = CFG.titulo || "Inicio";
-  $("title").textContent = CFG.titulo || "";
   $("title-es").textContent = CFG.espana.titulo;
   $("title-us").textContent = CFG.usa.titulo;
   $("detail-title").textContent = "Próximos días en " + CFG.detalle.nombre;
@@ -466,31 +464,23 @@
     var v = CFG.viaje;
     $("trip-title").textContent = v.texto;
     var end = localDate(v.fechaVuelta), now = new Date();
-    $("trip-date").textContent = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "long", year: "numeric" }).format(end) +
-                                 (v.fechaAproximada ? " (aprox.)" : "");
+    var dateTxt = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short" }).format(end) +
+                  (v.fechaAproximada ? " aprox." : "");
     var daysLeft = Math.max(0, Math.ceil((end - now) / 86400000));
-    if (daysLeft === 0) {
-      $("trip-days").innerHTML = "Hoy<span>es el día</span>";
-    } else {
-      $("trip-days").innerHTML = daysLeft + "<span>" + (daysLeft === 1 ? "día" : "días") +
-        " · " + Math.floor(daysLeft / 7) + " semanas</span>";
-    }
+    var daysTxt = daysLeft === 0 ? "<strong>hoy</strong>" : "<strong>" + daysLeft + "</strong> " + (daysLeft === 1 ? "día" : "días");
+    $("trip").title = "Fecha prevista: " + dateTxt;
     if (!v.fechaLlegada) {
-      $("trip-progress").hidden = true;
-      $("trip-note").hidden = false;
-      $("trip-note").textContent = "Para ver el porcentaje, añade la fecha de llegada (fechaLlegada) en config.js.";
+      $("bar").hidden = true;
+      $("trip-info").innerHTML = daysTxt + " · " + dateTxt;
       return;
     }
     var start = localDate(v.fechaLlegada);
-    var total = end - start;
-    var done = Math.min(100, Math.max(0, (now - start) / total * 100));
-    $("trip-progress").hidden = false;
-    $("trip-note").hidden = true;
-    $("pct-done").textContent = nf1.format(done) + " %";
-    $("pct-left").textContent = nf1.format(100 - done) + " %";
+    var done = Math.min(100, Math.max(0, (now - start) / (end - start) * 100));
+    $("bar").hidden = false;
     $("bar-done").style.width = done.toFixed(2) + "%";
     $("bar").setAttribute("aria-valuenow", done.toFixed(1));
-    $("bar").setAttribute("aria-label", "Llevas el " + nf1.format(done) + " % del tiempo");
+    $("bar").setAttribute("aria-label", "Queda el " + nf1.format(100 - done) + " %");
+    $("trip-info").innerHTML = daysTxt + " · queda <strong>" + nf1.format(100 - done) + " %</strong>";
   }
   renderTrip();
   setInterval(renderTrip, 60 * 60 * 1000);
@@ -508,9 +498,9 @@
     rate = r;
     var f4 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 4, maximumFractionDigits: 4 });
     rateEl.className = "rate" + (warn ? " warn" : "");
-    rateEl.textContent = "1 € = " + f4.format(r) + " $   ·   1 $ = " + f4.format(1 / r) + " €   ·   " +
+    rateEl.textContent = "1 $ = " + f4.format(1 / r) + " €   ·   1 € = " + f4.format(r) + " $   ·   " +
                          source + (date ? " (" + date + ")" : "");
-    fromEUR(); calcBill(); convertUnits("a");
+    fromUSD(); calcBill(); convertUnits("a");
   }
   function loadRate() {
     var base = CFG.divisa.base, to = CFG.divisa.destino;
@@ -528,14 +518,14 @@
   }
 
   /* ---------- Cuenta con impuesto y propina ---------- */
-  var taxPct = CFG.cuenta.impuestoVentas, tipPct = CFG.cuenta.propinas[2] != null ? CFG.cuenta.propinas[2] : 0;
+  var taxPct = CFG.cuenta.impuestoVentas, tipPct = CFG.cuenta.propinaPorDefecto != null ? CFG.cuenta.propinaPorDefecto : 0;
   var billIn = $("bill"), peopleIn = $("people"), chips = $("chips");
   selectOnFocus(billIn); selectOnFocus(peopleIn);
 
   CFG.cuenta.propinas.forEach(function (p) {
     var b = document.createElement("button");
     b.type = "button"; b.className = "chip"; b.dataset.pct = p;
-    b.textContent = p === 0 ? "Sin propina" : p + " %";
+    b.textContent = p + " %";
     b.addEventListener("click", function () { tipPct = p; customTip.value = ""; markChips(); calcBill(); });
     chips.appendChild(b);
   });

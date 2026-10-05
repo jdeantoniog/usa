@@ -8,16 +8,15 @@
    ============================================================= */
 
 window.CONFIG = {
-  titulo: "Inicio de Carlota",
+  titulo: "Inicio",   // solo se ve en la pestaña y en el icono de la pantalla de inicio
 
   /* ---------- Vuelta a España ---------- */
   viaje: {
     texto: "Vuelta a España",
-    // Día en que llegó a West Branch. Necesario para calcular el %.
-    // Ejemplo: fechaLlegada: "2026-08-20",
-    fechaLlegada: null,
-    fechaVuelta: "2027-06-15",
-    fechaAproximada: true          // muestra "aprox." junto a la fecha
+    // Día de salida de España. Inicio del cálculo del %.
+    fechaLlegada: "2026-08-18",
+    fechaVuelta: "2027-06-20",
+    fechaAproximada: false         // muestra "aprox." junto a la fecha
   },
 
   /* ---------- Divisa ---------- */
@@ -31,7 +30,8 @@ window.CONFIG = {
   /* ---------- Cuenta en tienda o restaurante ---------- */
   cuenta: {
     impuestoVentas: 6,             // % impuesto sobre ventas en Michigan
-    propinas: [0, 15, 18, 20]      // botones de propina en %
+    propinas: [0, 10, 15, 20],     // botones de propina en %
+    propinaPorDefecto: 15
   },
 
   /* ---------- Lugar con previsión detallada y avisos oficiales ---------- */
