@@ -1399,22 +1399,29 @@
       ul.appendChild(li);
     });
   }
+  // Elige n palabras seguidas que cambian cada día (al acabar la lista, vuelve a empezar)
+  function dailySlice(list, n) {
+    if (list.length <= n) return list.slice();
+    var start = (dayNumber() * n) % list.length, out = [];
+    for (var i = 0; i < n; i++) out.push(list[(start + i) % list.length]);
+    return out;
+  }
   function renderSeason() {
     var E = window.ESTACIONES;
     if (!E) { $("season-card").hidden = true; return; }
     var m = +localParts(tzUS).month;
     var key = m >= 3 && m <= 5 ? "primavera" : m >= 6 && m <= 8 ? "verano" : m >= 9 && m <= 11 ? "otono" : "invierno";
-    var names = { primavera: "primavera", verano: "verano", otono: "otoño", invierno: "invierno" };
+    var names = { primavera: "de la primavera", verano: "del verano", otono: "del otoño", invierno: "del invierno" };
     var list = E[key] || [];
     if (!list.length) { $("season-card").hidden = true; return; }
-    $("season-title").textContent = "Palabras del " + names[key];
-    fillWordList($("season-list"), list);
+    $("season-title").textContent = "Palabras " + names[key];
+    fillWordList($("season-list"), dailySlice(list, CFG.palabrasPorDia || 6));
     $("season-card").hidden = false;
   }
   function renderVocab() {
     var V = window.VOCAB_HS || [];
     if (!V.length) { $("vocab-card").hidden = true; return; }
-    fillWordList($("vocab-list"), V);
+    fillWordList($("vocab-list"), dailySlice(V, CFG.palabrasPorDia || 6));
     $("vocab-card").hidden = false;
   }
 

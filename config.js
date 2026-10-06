@@ -45,6 +45,10 @@ window.CONFIG = {
      Muestra todas las fechas de mensajesEspeciales que caen dentro de maxDias. */
   cuentaAtras: { maxDias: 365 },
 
+  /* ---------- Palabras de la estación y vocabulario de high school ----------
+     Cuántas se muestran cada día (rotan solas a medianoche de West Branch). */
+  palabrasPorDia: 6,
+
   /* ---------- Horas de luz (línea antes de "Próximos días") ---------- */
   luz: { nombre: "West Branch", lat: 44.2764, zonaHoraria: "America/Detroit" },
 

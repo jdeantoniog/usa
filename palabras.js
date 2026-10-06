@@ -131,7 +131,19 @@ window.ESTACIONES = {
     { en: "Costume", es: "Disfraz" },
     { en: "Turkey / Stuffing", es: "Pavo / Relleno" },
     { en: "Black Friday", es: "Día de rebajas tras Thanksgiving" },
-    { en: "Sweater weather", es: "Tiempo de jersey" }
+    { en: "Sweater weather", es: "Tiempo de jersey" },
+    { en: "Chilly", es: "Fresquito / Frío" },
+    { en: "Frost", es: "Escarcha / Helada" },
+    { en: "Acorn", es: "Bellota" },
+    { en: "Maple tree", es: "Arce" },
+    { en: "Foliage", es: "Follaje" },
+    { en: "Haunted house", es: "Casa del terror" },
+    { en: "Candy corn", es: "Caramelos de Halloween con forma de maíz" },
+    { en: "Jack-o'-lantern", es: "Calabaza tallada con vela" },
+    { en: "Pumpkin pie", es: "Tarta de calabaza" },
+    { en: "Leftovers", es: "Sobras (las de Thanksgiving duran días)" },
+    { en: "Flannel", es: "Camisa de franela" },
+    { en: "Bonfire", es: "Hoguera" }
   ],
   invierno: [
     { en: "Snowstorm / Blizzard", es: "Tormenta de nieve / Ventisca" },
@@ -145,7 +157,19 @@ window.ESTACIONES = {
     { en: "Snowman", es: "Muñeco de nieve" },
     { en: "Hot cocoa", es: "Chocolate caliente" },
     { en: "Winter break", es: "Vacaciones de Navidad" },
-    { en: "Ice fishing", es: "Pesca en el hielo (muy típica en Michigan)" }
+    { en: "Ice fishing", es: "Pesca en el hielo (muy típica en Michigan)" },
+    { en: "Frostbite", es: "Congelación (en la piel)" },
+    { en: "Snow shovel", es: "Pala de nieve" },
+    { en: "Snowplow", es: "Quitanieves" },
+    { en: "Black ice", es: "Placas de hielo invisibles" },
+    { en: "Below zero", es: "Bajo cero (allí suele ser en °F)" },
+    { en: "Layers", es: "Capas de ropa" },
+    { en: "Beanie", es: "Gorro de lana" },
+    { en: "Snowball fight", es: "Guerra de bolas de nieve" },
+    { en: "Ice skating", es: "Patinaje sobre hielo" },
+    { en: "Christmas lights", es: "Luces de Navidad" },
+    { en: "New Year's resolution", es: "Propósito de Año Nuevo" },
+    { en: "Cabin fever", es: "Agobio de estar mucho tiempo encerrado" }
   ],
   primavera: [
     { en: "Spring break", es: "Vacaciones de primavera" },
@@ -159,7 +183,19 @@ window.ESTACIONES = {
     { en: "Track and field", es: "Atletismo" },
     { en: "Finals", es: "Exámenes finales" },
     { en: "Sunscreen", es: "Crema solar" },
-    { en: "Daylight saving time", es: "Horario de verano" }
+    { en: "Daylight saving time", es: "Horario de verano" },
+    { en: "Showers", es: "Chubascos" },
+    { en: "Puddle", es: "Charco" },
+    { en: "Sprout", es: "Brote" },
+    { en: "Robin", es: "Petirrojo americano (anuncia la primavera)" },
+    { en: "Tulip", es: "Tulipán" },
+    { en: "Spring cleaning", es: "Limpieza a fondo de primavera" },
+    { en: "Mild", es: "Templado / Suave" },
+    { en: "Breeze", es: "Brisa" },
+    { en: "Corsage", es: "Ramillete de muñeca para el Prom" },
+    { en: "Senior year", es: "Último curso de high school" },
+    { en: "Yearbook signing", es: "Firmar los anuarios" },
+    { en: "Mother's Day", es: "Día de la Madre (2.º domingo de mayo en EE. UU.)" }
   ],
   verano: [
     { en: "Summer break", es: "Vacaciones de verano" },
@@ -173,7 +209,19 @@ window.ESTACIONES = {
     { en: "Yearbook", es: "Anuario del instituto" },
     { en: "Goodbye party", es: "Fiesta de despedida" },
     { en: "Keep in touch", es: "Seguimos en contacto" },
-    { en: "Back home", es: "De vuelta en casa" }
+    { en: "Back home", es: "De vuelta en casa" },
+    { en: "Heat wave", es: "Ola de calor" },
+    { en: "Humid", es: "Húmedo / Bochornoso" },
+    { en: "Flip-flops", es: "Chanclas" },
+    { en: "Popsicle", es: "Polo (helado)" },
+    { en: "Lemonade stand", es: "Puesto de limonada" },
+    { en: "Barbecue / Cookout", es: "Barbacoa" },
+    { en: "Canoe / Kayak", es: "Canoa / Kayak" },
+    { en: "Fireflies", es: "Luciérnagas" },
+    { en: "Road trip", es: "Viaje en coche" },
+    { en: "Farewell", es: "Despedida" },
+    { en: "Pack / Suitcase", es: "Hacer la maleta / Maleta" },
+    { en: "Jet lag", es: "Desfase horario" }
   ]
 };
 
