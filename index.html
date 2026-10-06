@@ -22,6 +22,10 @@
     --mid: #a76a00;
     --focus: #0a6cff;
     --alert-bg: #fff1f2;
+    --cloud: #aab3c5;
+    --sun: #f2a900;
+    --rain: #2f7de1;
+    --snow: #7fa7ff;
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -37,6 +41,7 @@
       --ok: #4cc283;
       --mid: #e0a43a;
       --alert-bg: #3a1a20;
+      --cloud: #8590a6;
     }
   }
   *, *::before, *::after { box-sizing: inherit; }
@@ -75,6 +80,11 @@
     font-size: clamp(2rem, 9vw, 3.6rem); font-weight: 800; letter-spacing: -0.03em;
     line-height: 1; margin-top: 12px; font-variant-numeric: tabular-nums;
   }
+  .clock { display: flex; justify-content: center; align-items: center; gap: 0.18em; }
+  .wx-ico { display: inline-flex; width: 0.8em; height: 0.8em; flex: none; }
+  .wx-ico:empty { display: none; }
+  .wx-ico svg, .mini-ico svg, .day-ico svg { width: 100%; height: 100%; display: block; }
+  .clock-wx { font-size: 0.85rem; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
   .clock-place { font-weight: 600; margin-top: 4px; }
   .clock-date { color: var(--muted); font-size: 0.9rem; }
   .gap { color: var(--muted); font-size: 0.85rem; text-align: center; padding-bottom: 30px; white-space: nowrap; }
@@ -189,7 +199,12 @@
   .day p { margin: 2px 0; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
   .day p.snow { color: var(--us-blue); font-weight: 700; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .day p.snow { color: #8fb4ff; } }
-  .alert-status { margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+  .alert-status { margin: 4px 0 0; text-align: center; font-size: 0.85rem; color: var(--muted); }
+  .alert-status.on { color: var(--us-red); font-weight: 700; }
+  .mini-ico { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.3em; margin-right: 3px; }
+  .day-head { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+  .day-ico { width: 28px; height: 28px; flex: none; }
+  .details .card:first-child { margin-top: 16px; }
 
   /* ---------- Fechas ---------- */
   .list li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); }
@@ -243,19 +258,22 @@
           <rect width="750" height="500" fill="#aa151b"/>
           <rect y="125" width="750" height="250" fill="#f1bf00"/>
         </svg>
-        <div class="clock" id="clock-es">--:--</div>
+        <div class="clock"><span class="wx-ico" id="ico-es" aria-hidden="true"></span><span id="clock-es">--:--</span></div>
         <div class="clock-place" id="place-es"></div>
         <div class="clock-date" id="date-es"></div>
+        <div class="clock-wx" id="wx-es"></div>
       </div>
       <div class="gap" id="gap"></div>
       <div class="flag-block">
         <svg class="flag" id="flag-us" viewBox="0 0 750 500" role="img" aria-label="Bandera de Estados Unidos"></svg>
-        <div class="clock" id="clock-us">--:--</div>
+        <div class="clock"><span class="wx-ico" id="ico-us" aria-hidden="true"></span><span id="clock-us">--:--</span></div>
         <div class="clock-place" id="place-us"></div>
         <div class="clock-date" id="date-us"></div>
+        <div class="clock-wx" id="wx-us"></div>
       </div>
     </div>
     <p class="call" id="call"><span class="dot" aria-hidden="true"></span><span id="call-text"></span></p>
+    <p class="alert-status" id="alert-status">Comprobando avisos oficiales…</p>
   </section>
 
   <!-- Avisos oficiales: solo aparece si hay alguno activo -->
@@ -285,6 +303,21 @@
     <div class="rate" id="rate">Cargando tipo de cambio…</div>
   </section>
 
+  <!-- Tiempo -->
+  <section class="weather-grid">
+    <div class="weather es">
+      <h2 id="title-es">España</h2>
+      <ul id="list-es"><li class="status">Cargando el tiempo…</li></ul>
+    </div>
+    <div class="weather us">
+      <h2 id="title-us">Estados Unidos</h2>
+      <ul id="list-us"><li class="status">Cargando el tiempo…</li></ul>
+    </div>
+  </section>
+
+  <!-- Previsión detallada: una tarjeta por cada lugar de "detalles" en config.js -->
+  <div id="details"></div>
+
   <!-- Cuenta con impuesto y propina -->
   <section class="card" aria-labelledby="bill-title">
     <h2 id="bill-title">Cuenta en tienda o restaurante</h2>
@@ -307,26 +340,6 @@
       <div class="bill-line muted"><span>Total en euros</span><span id="total-eur">—</span></div>
     </div>
     <p class="small muted">La propina se calcula sobre el precio sin impuestos, como es habitual. Fuera de restaurantes y servicios no se deja propina.</p>
-  </section>
-
-  <!-- Tiempo -->
-  <section class="weather-grid">
-    <div class="weather es">
-      <h2 id="title-es">España</h2>
-      <ul id="list-es"><li class="status">Cargando el tiempo…</li></ul>
-    </div>
-    <div class="weather us">
-      <h2 id="title-us">Estados Unidos</h2>
-      <ul id="list-us"><li class="status">Cargando el tiempo…</li></ul>
-    </div>
-  </section>
-
-  <!-- Previsión detallada -->
-  <section class="card" aria-labelledby="detail-title">
-    <h2 id="detail-title">Próximos días</h2>
-    <div class="sun" id="sun"></div>
-    <div class="days" id="days"><p class="status">Cargando previsión…</p></div>
-    <p class="alert-status" id="alert-status">Comprobando avisos oficiales…</p>
   </section>
 
   <!-- Conversor de unidades -->
@@ -376,7 +389,6 @@
   document.title = CFG.titulo || "Inicio";
   $("title-es").textContent = CFG.espana.titulo;
   $("title-us").textContent = CFG.usa.titulo;
-  $("detail-title").textContent = "Próximos días en " + CFG.detalle.nombre;
 
   /* ---------- Formatos ---------- */
   var nf2 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -618,6 +630,39 @@
     80: "Chubascos débiles", 81: "Chubascos", 82: "Chubascos fuertes", 85: "Chubascos de nieve", 86: "Chubascos de nieve fuertes",
     95: "Tormenta", 96: "Tormenta con granizo", 99: "Tormenta con granizo fuerte"
   };
+  /* Iconos del tiempo (SVG propio, sin dependencias) */
+  var CLOUD = '<path d="M9 25h15a6 6 0 0 0 0-12a8 8 0 0 0-15 2a5 5 0 0 0 0 10z" fill="var(--cloud)"/>';
+  var CLOUD_UP = '<g transform="translate(0,-5)">' + CLOUD + "</g>";
+  function sunSvg(cx, cy, r) {
+    var rays = "";
+    for (var k = 0; k < 8; k++) {
+      var a = k * Math.PI / 4, x1 = cx + Math.cos(a) * (r + 2.5), y1 = cy + Math.sin(a) * (r + 2.5),
+          x2 = cx + Math.cos(a) * (r + 5.5), y2 = cy + Math.sin(a) * (r + 5.5);
+      rays += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>';
+    }
+    return '<g stroke="var(--sun)" stroke-width="2" stroke-linecap="round">' + rays + "</g>" +
+           '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="var(--sun)"/>';
+  }
+  function moonSvg(cx, cy, s) {
+    return '<path transform="translate(' + cx + "," + cy + ") scale(" + s + ')" d="M2-9a10 10 0 1 0 8 15A8 8 0 0 1 2-9z" fill="#c4cbe0"/>';
+  }
+  function icon(code, isDay) {
+    var day = isDay !== 0, b = "";
+    if (code === 0 || code === 1) b = day ? sunSvg(16, 16, 6.5) : moonSvg(16, 16, 1.2);
+    else if (code === 2) b = (day ? sunSvg(12, 11, 5) : moonSvg(12, 11, 0.8)) + CLOUD;
+    else if (code === 3) b = CLOUD;
+    else if (code === 45 || code === 48)
+      b = '<g stroke="var(--cloud)" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="11" x2="26" y2="11"/><line x1="4" y1="17" x2="28" y2="17"/><line x1="7" y1="23" x2="25" y2="23"/></g>';
+    else if ((code >= 71 && code <= 77) || code === 85 || code === 86)
+      b = CLOUD_UP + '<g fill="var(--snow)"><circle cx="10" cy="26" r="2"/><circle cx="16" cy="29" r="2"/><circle cx="22" cy="26" r="2"/></g>';
+    else if (code >= 95)
+      b = CLOUD_UP + '<path d="M17 19l-5 7h4l-2 6 7-9h-4l2-4z" fill="var(--sun)"/>';
+    else if (code >= 51)
+      b = CLOUD_UP + '<g stroke="var(--rain)" stroke-width="2" stroke-linecap="round"><line x1="11" y1="23" x2="9" y2="28"/><line x1="17" y1="23" x2="15" y2="28"/><line x1="23" y1="23" x2="21" y2="28"/></g>';
+    else b = CLOUD;
+    return '<svg viewBox="0 0 32 32" aria-hidden="true">' + b + "</svg>";
+  }
+
   function toF(c) { return c * 9 / 5 + 32; }
   function t(c, unit) { return c == null ? "—" : Math.round(unit === "fahrenheit" ? toF(c) : c) + "°"; }
   function otherUnit(u) { return u === "fahrenheit" ? "celsius" : "fahrenheit"; }
@@ -641,7 +686,7 @@
         li.innerHTML =
           '<span class="w-name"></span>' +
           '<span class="w-temp">' + t(cur.temperature_2m, unit) + both + "</span>" +
-          '<span class="w-desc">' + (WMO[cur.weather_code] || "—") + "</span>" +
+          '<span class="w-desc"><span class="mini-ico">' + icon(cur.weather_code, cur.is_day) + "</span>" + (WMO[cur.weather_code] || "—") + "</span>" +
           '<span class="w-extra">Sensación ' + t(cur.apparent_temperature, unit) +
           "   Máx " + t(day.temperature_2m_max[0], unit) + "   Mín " + t(day.temperature_2m_min[0], unit) +
           "   Lluvia " + (rain == null ? "—" : rain + " %") + "</span>";
@@ -649,13 +694,19 @@
       li.querySelector(".w-name").textContent = lugar.nombre;
       ul.appendChild(li);
     });
+    // El primer lugar de cada lista alimenta el icono junto al reloj
+    var key = region === CFG.espana ? "es" : "us", first = data[0];
+    if (first && first.current) {
+      $("ico-" + key).innerHTML = icon(first.current.weather_code, first.current.is_day);
+      $("wx-" + key).textContent = t(first.current.temperature_2m, unit) + "  " + (WMO[first.current.weather_code] || "");
+    }
   }
 
   function fetchWeather(region) {
     var lats = region.lugares.map(function (l) { return l.lat; }).join(",");
     var lons = region.lugares.map(function (l) { return l.lon; }).join(",");
     return fetchJSON("https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
-      "&current=temperature_2m,apparent_temperature,weather_code" +
+      "&current=temperature_2m,apparent_temperature,weather_code,is_day" +
       "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
       "&forecast_days=1&timezone=auto")
       .then(function (d) { return Array.isArray(d) ? d : [d]; });
@@ -671,42 +722,58 @@
     var s = new Intl.DateTimeFormat("es-ES", { weekday: "long", timeZone: "UTC" }).format(new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])));
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
-  function loadDetail() {
-    var D = CFG.detalle, unit = CFG.usa.unidad, other = otherUnit(unit), both = CFG.usa.mostrarAmbasUnidades;
-    fetchJSON("https://api.open-meteo.com/v1/forecast?latitude=" + D.lat + "&longitude=" + D.lon +
-      "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_min," +
-      "snowfall_sum,precipitation_probability_max,sunrise,sunset" +
-      "&forecast_days=" + (D.dias || 3) + "&timezone=" + encodeURIComponent(D.zonaHoraria) + "&wind_speed_unit=kmh")
-      .then(function (d) {
-        var dl = d.daily, cur = d.current;
-        var light = minutesOf(dl.sunset[0]) - minutesOf(dl.sunrise[0]);
-        $("sun").innerHTML =
-          '<div><span class="small muted">Amanecer</span><strong>' + hhmm(dl.sunrise[0]) + "</strong></div>" +
-          '<div><span class="small muted">Atardecer</span><strong>' + hhmm(dl.sunset[0]) + "</strong></div>" +
-          '<div><span class="small muted">Sensación ahora</span><strong>' + t(cur.apparent_temperature, unit) +
-          (both ? ' <span class="small muted">' + t(cur.apparent_temperature, other) + unitLetter(other) + "</span>" : "") +
-          "</strong></div>";
+  function buildDetailCards() {
+    var wrap = $("details");
+    wrap.className = "details";
+    wrap.innerHTML = "";
+    (CFG.detalles || []).forEach(function (D, n) {
+      var sec = document.createElement("section");
+      sec.className = "card";
+      sec.innerHTML = '<h2 id="detail-title-' + n + '"></h2><div class="sun" id="sun-' + n + '"></div>' +
+        '<div class="days" id="days-' + n + '"><p class="status">Cargando previsión…</p></div>';
+      wrap.appendChild(sec);
+      $("detail-title-" + n).textContent = "Próximos días en " + D.nombre;
+    });
+  }
+  buildDetailCards();
 
-        var html = "";
-        dl.time.forEach(function (day, i) {
-          var snow = dl.snowfall_sum[i], rain = dl.precipitation_probability_max[i];
-          html += '<div class="day">' +
-            '<div class="day-name">' + dayLabel(day, i) + "</div>" +
-            '<div class="day-temp">' + t(dl.temperature_2m_max[i], unit) + " <span>/ " + t(dl.temperature_2m_min[i], unit) + "</span></div>" +
-            "<p>" + (WMO[dl.weather_code[i]] || "—") + "</p>" +
-            "<p>Sensación mín " + t(dl.apparent_temperature_min[i], unit) + "</p>" +
-            "<p>Precipitación " + (rain == null ? "—" : rain + " %") + "</p>" +
-            (snow > 0 ? '<p class="snow">Nieve ' + nf1.format(snow) + " cm</p>" : "<p>Sin nieve</p>") +
-            "</div>";
+  function loadDetail() {
+    (CFG.detalles || []).forEach(function (D, n) {
+      var unit = D.unidad || "celsius", other = otherUnit(unit), both = D.mostrarAmbasUnidades;
+      fetchJSON("https://api.open-meteo.com/v1/forecast?latitude=" + D.lat + "&longitude=" + D.lon +
+        "&current=temperature_2m,apparent_temperature,weather_code,is_day" +
+        "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_min," +
+        "snowfall_sum,precipitation_probability_max,sunrise,sunset" +
+        "&forecast_days=" + (D.dias || 3) + "&timezone=" + encodeURIComponent(D.zonaHoraria))
+        .then(function (d) {
+          var dl = d.daily, cur = d.current;
+          var light = minutesOf(dl.sunset[0]) - minutesOf(dl.sunrise[0]);
+          $("sun-" + n).innerHTML =
+            '<div><span class="small muted">Amanecer</span><strong>' + hhmm(dl.sunrise[0]) + "</strong></div>" +
+            '<div><span class="small muted">Atardecer</span><strong>' + hhmm(dl.sunset[0]) + "</strong></div>" +
+            '<div><span class="small muted">Sensación ahora</span><strong>' + t(cur.apparent_temperature, unit) +
+            (both ? ' <span class="small muted">' + t(cur.apparent_temperature, other) + unitLetter(other) + "</span>" : "") +
+            "</strong></div>";
+          var html = "";
+          dl.time.forEach(function (day, i) {
+            var snow = dl.snowfall_sum[i], rain = dl.precipitation_probability_max[i];
+            html += '<div class="day">' +
+              '<div class="day-head"><span class="day-name">' + dayLabel(day, i) + '</span><span class="day-ico">' + icon(dl.weather_code[i], 1) + "</span></div>" +
+              '<div class="day-temp">' + t(dl.temperature_2m_max[i], unit) + " <span>/ " + t(dl.temperature_2m_min[i], unit) + "</span></div>" +
+              "<p>" + (WMO[dl.weather_code[i]] || "—") + "</p>" +
+              "<p>Sensación mín " + t(dl.apparent_temperature_min[i], unit) + "</p>" +
+              "<p>Precipitación " + (rain == null ? "—" : rain + " %") + "</p>" +
+              (snow > 0 ? '<p class="snow">Nieve ' + nf1.format(snow) + " cm</p>" : "<p>Sin nieve</p>") +
+              "</div>";
+          });
+          $("days-" + n).innerHTML = html;
+          $("detail-title-" + n).textContent = "Próximos días en " + D.nombre + "  ·  " +
+            Math.floor(light / 60) + " h " + (light % 60) + " min de luz";
+        })
+        .catch(function () {
+          $("days-" + n).innerHTML = '<p class="status warn">No se ha podido cargar la previsión. Pulsa Actualizar ahora.</p>';
         });
-        $("days").innerHTML = html;
-        $("detail-title").textContent = "Próximos días en " + D.nombre + "  ·  " +
-          Math.floor(light / 60) + " h " + (light % 60) + " min de luz hoy";
-      })
-      .catch(function () {
-        $("days").innerHTML = '<p class="status warn">No se ha podido cargar la previsión. Pulsa Actualizar ahora.</p>';
-      });
+    });
   }
 
   /* ---------- Avisos oficiales (National Weather Service) ---------- */
@@ -742,14 +809,17 @@
     "Air Quality Alert": "Alerta por calidad del aire"
   };
   function loadAlerts() {
-    var D = CFG.detalle, box = $("alerts"), status = $("alert-status");
+    var D = (CFG.detalles || []).filter(function (x) { return x.avisosOficiales; })[0];
+    var box = $("alerts"), status = $("alert-status");
+    if (!D) { status.hidden = true; return; }
+    status.className = "alert-status";
     fetchJSON("https://api.weather.gov/alerts/active?point=" + D.lat + "," + D.lon)
       .then(function (d) {
         var feats = (d.features || []).map(function (f) { return f.properties; });
         box.innerHTML = "";
         if (!feats.length) {
           box.hidden = true;
-          status.textContent = "Sin avisos oficiales activos en " + D.nombre + " (National Weather Service).";
+          status.textContent = "Sin avisos meteorológicos oficiales en " + D.nombre;
           return;
         }
         feats.forEach(function (p) {
@@ -768,8 +838,9 @@
           box.appendChild(div);
         });
         box.hidden = false;
-        status.textContent = feats.length + (feats.length === 1 ? " aviso activo" : " avisos activos") +
-          " en " + D.nombre + ": detalle arriba del todo.";
+        status.className = "alert-status on";
+        status.textContent = "Precaución: " + feats.length + (feats.length === 1 ? " aviso oficial activo" : " avisos oficiales activos") +
+          " en " + D.nombre;
       })
       .catch(function () {
         box.hidden = true;

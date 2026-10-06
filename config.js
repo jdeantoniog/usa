@@ -34,14 +34,29 @@ window.CONFIG = {
     propinaPorDefecto: 15
   },
 
-  /* ---------- Lugar con previsión detallada y avisos oficiales ---------- */
-  detalle: {
-    nombre: "West Branch",
-    lat: 44.2764,
-    lon: -84.2386,
-    zonaHoraria: "America/Detroit",
-    dias: 3
-  },
+  /* ---------- Previsión detallada (una tarjeta por lugar, en este orden) ----------
+     avisosOficiales: true  -> avisos del National Weather Service (solo EE. UU.).
+     Solo un lugar debería tenerlo activado.                                    */
+  detalles: [
+    {
+      nombre: "West Branch",
+      lat: 44.2764, lon: -84.2386,
+      zonaHoraria: "America/Detroit",
+      unidad: "celsius",
+      mostrarAmbasUnidades: true,
+      dias: 3,
+      avisosOficiales: true
+    },
+    {
+      nombre: "Madrid (Ciudad Lineal)",
+      lat: 40.4466, lon: -3.6510,
+      zonaHoraria: "Europe/Madrid",
+      unidad: "celsius",
+      mostrarAmbasUnidades: false,
+      dias: 3,
+      avisosOficiales: false
+    }
+  ],
 
   /* ---------- Tiempo: columna izquierda ---------- */
   espana: {
@@ -50,10 +65,12 @@ window.CONFIG = {
     ciudadReloj: "Madrid",
     unidad: "celsius",             // "celsius" o "fahrenheit"
     lugares: [
-      { nombre: "Madrid",                 lat: 40.4168, lon: -3.7038 },
-      { nombre: "Barcelona",              lat: 41.3874, lon:  2.1686 },
-      { nombre: "Santiago de Compostela", lat: 42.8782, lon: -8.5448 },
-      { nombre: "Valencia",               lat: 39.4699, lon: -0.3763 }
+      { nombre: "Madrid",     lat: 40.4168, lon: -3.7038 },
+      { nombre: "Estepona",   lat: 36.4276, lon: -5.1463 },
+      { nombre: "Isla Canela", lat: 37.1765, lon: -7.3410 },
+      { nombre: "Barcelona",  lat: 41.3874, lon:  2.1686 },
+      // Estación de esquí (cota media). Para el pueblo de Taüll usa lat: 42.5197, lon: 0.8486
+      { nombre: "Boí Taüll",  lat: 42.4770, lon:  0.8780 }
     ]
   },
 
