@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inicio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #f5f7fb;
@@ -84,7 +84,13 @@
   .wx-ico { display: inline-flex; width: 0.8em; height: 0.8em; flex: none; }
   .wx-ico:empty { display: none; }
   .wx-ico svg, .mini-ico svg, .day-ico svg { width: 100%; height: 100%; display: block; }
-  .clock-wx { font-size: 0.85rem; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .clock-wx {
+    font-size: 0.85rem; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums;
+    line-height: 1.3; height: 2.6em; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .flags { align-items: start; }
+  .gap { align-self: center; }
   .clock-place { font-weight: 600; margin-top: 4px; }
   .clock-date { color: var(--muted); font-size: 0.9rem; }
   .gap { color: var(--muted); font-size: 0.85rem; text-align: center; padding-bottom: 30px; white-space: nowrap; }
@@ -176,12 +182,17 @@
   .weather ul, .list { list-style: none; margin: 0; padding: 0; }
   .weather li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 0; border-top: 1px solid var(--line); }
   .weather li:first-child { border-top: 0; padding-top: 0; }
-  .w-name { font-weight: 600; }
+  .w-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .w-temp {
     font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; text-align: right;
     grid-row: span 2; align-self: center; font-variant-numeric: tabular-nums;
   }
   .w-temp small { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+  /* Altura fija: descripción y detalle siempre ocupan 2 líneas para que ambos paneles queden nivelados */
+  .w-desc, .w-extra {
+    line-height: 1.3; height: 2.6em; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
   .w-desc { font-size: 0.85rem; color: var(--muted); }
   .w-extra { grid-column: 1 / -1; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
   .status { font-size: 0.85rem; color: var(--muted); padding: 8px 0; }
@@ -206,7 +217,55 @@
   .day-ico { width: 28px; height: 28px; flex: none; }
   .details .card:first-child { margin-top: 16px; }
 
-  /* ---------- Fechas ---------- */
+  /* ---------- Frase del día ---------- */
+  .love { margin: 0 0 14px; text-align: center; font-size: 0.8rem; color: var(--muted); font-style: italic; line-height: 1.35; }
+  .love-es { display: block; }
+
+  /* ---------- Luna ---------- */
+  .moon { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); margin-left: auto; flex: none; font-variant-numeric: tabular-nums; }
+  .moon svg { width: 16px; height: 16px; display: block; }
+
+  /* ---------- Historial de expresiones ---------- */
+  .hist li { grid-template-columns: 1fr auto; }
+  .hist .h-en { font-weight: 600; }
+  .hist .h-es { color: var(--muted); font-size: 0.9rem; }
+
+  /* ---------- Auroras ---------- */
+  #aurora { margin-top: 8px; }
+  #aurora .dot { background: var(--muted); }
+  #aurora.lvl1 .dot { background: var(--cloud); }
+  #aurora.lvl2 .dot { background: var(--mid); }
+  #aurora.lvl3 .dot, #aurora.lvl4 .dot { background: var(--ok); }
+  #aurora .trip-info { overflow: hidden; text-overflow: ellipsis; }
+
+  /* ---------- UV y aire ---------- */
+  .uv-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; }
+  .uv-cell { text-align: center; font-variant-numeric: tabular-nums; }
+  .uv-val { display: block; border-radius: 6px; padding: 8px 0; font-weight: 800; font-size: 1.05rem; color: #ffffff; }
+  .uv-cell.now .uv-val { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .uv-hour { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+  .uv-cell.now .uv-hour { color: var(--ink); font-weight: 700; }
+  .uv0 { background: #3ea72d; } .uv1 { background: #e8c100; color: #1b2233 !important; }
+  .uv2 { background: #f18b00; } .uv3 { background: #e53210; } .uv4 { background: #8e4ab1; }
+  .uv-note { margin: 8px 0 0; }
+  .uv-place + .uv-place { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .uv-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .uv-head strong { font-size: 1rem; }
+  .uv-head .aq { margin: 0; font-size: 0.85rem; }
+  .aq { margin: 10px 0 0; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .aq.a0 .dot { background: #3ea72d; } .aq.a1 .dot { background: #e8c100; } .aq.a2 .dot { background: #f18b00; }
+  .aq.a3 .dot { background: #e53210; } .aq.a4 .dot { background: #8e4ab1; } .aq.a5 .dot { background: #7e0023; }
+
+  /* ---------- Expresión del día ---------- */
+  .word-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .word-head h2 { margin: 0; }
+  .word-head { align-items: flex-start; }
+  .word-en { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; line-height: 1.15; }
+  .word-es { font-size: 1.05rem; font-weight: 600; color: var(--muted); margin: 4px 0 0; }
+  .word-ex { margin: 12px 0 0; font-style: italic; }
+  .word-ex-es { margin: 2px 0 0; }
+
+  /* ---------- Fechas (estilos) ---------- */
   .list li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); }
   .list li:first-child { border-top: 0; }
   .tag { font-size: 0.75rem; font-weight: 700; border-radius: 6px; padding: 2px 7px; color: #ffffff; min-width: 2.6em; text-align: center; }
@@ -250,6 +309,9 @@
 </head>
 <body>
 <main>
+  <!-- Frase cariñosa del día -->
+  <p class="love" id="love" hidden><span id="love-en"></span><span class="love-es" id="love-es"></span></p>
+
   <!-- Banderas y hora -->
   <section aria-label="Hora local">
     <div class="flags">
@@ -286,6 +348,14 @@
     <span class="trip-info" id="trip-info">--</span>
   </section>
 
+  <!-- Auroras boreales: una línea -->
+  <section class="trip" id="aurora" aria-label="Auroras boreales">
+    <span class="trip-label">Auroras esta noche</span>
+    <span class="dot" id="aurora-dot" aria-hidden="true"></span>
+    <span class="trip-info" id="aurora-info">Cargando…</span>
+    <span class="moon" id="moon"></span>
+  </section>
+
   <!-- Euros y dólares -->
   <section class="card" aria-labelledby="conv-title">
     <h2 id="conv-title">Dólares y euros</h2>
@@ -303,6 +373,12 @@
     <div class="rate" id="rate">Cargando tipo de cambio…</div>
   </section>
 
+  <!-- Índice UV por hora y calidad del aire: un bloque por lugar de "uv" en config.js -->
+  <section class="card" aria-labelledby="uv-title">
+    <h2 id="uv-title">Sol y aire</h2>
+    <div id="uv-wrap"></div>
+  </section>
+
   <!-- Tiempo -->
   <section class="weather-grid">
     <div class="weather es">
@@ -317,6 +393,17 @@
 
   <!-- Previsión detallada: una tarjeta por cada lugar de "detalles" en config.js -->
   <div id="details"></div>
+
+  <!-- Palabra o expresión del día -->
+  <section class="card word" id="word-card" aria-label="Expresión del día en inglés" hidden>
+    <div class="word-head">
+      <p class="word-en" id="word-en"></p>
+      <button type="button" class="chip" id="word-next">Otra</button>
+    </div>
+    <p class="word-es" id="word-es"></p>
+    <p class="word-ex" id="word-ex"></p>
+    <p class="word-ex-es small muted" id="word-ex-es"></p>
+  </section>
 
   <!-- Cuenta con impuesto y propina -->
   <section class="card" aria-labelledby="bill-title">
@@ -367,6 +454,12 @@
     <ul class="list" id="dates"></ul>
   </section>
 
+  <!-- Últimas expresiones -->
+  <section class="card" id="history-card" aria-labelledby="history-title" hidden>
+    <h2 id="history-title">Últimas expresiones</h2>
+    <ul class="list hist" id="history"></ul>
+  </section>
+
   <footer>
     <p id="updated"></p>
     <button type="button" id="refresh">Actualizar ahora</button>
@@ -374,7 +467,9 @@
 </main>
 
 <script src="config.js"></script>
+<script src="palabras.js"></script>
 <script>
+
 (function () {
   "use strict";
 
@@ -875,6 +970,200 @@
     });
   }
 
+  /* ---------- Utilidades de hora local ---------- */
+  function localParts(tz, d) {
+    var p = {};
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit"
+    }).formatToParts(d || new Date()).forEach(function (x) { p[x.type] = x.value; });
+    return p;
+  }
+  function localHourISO(tz, d) { var p = localParts(tz, d); return p.year + "-" + p.month + "-" + p.day + "T" + p.hour + ":00"; }
+
+  /* ---------- Auroras (NOAA SWPC, índice Kp previsto) ---------- */
+  function parseKp(d) {
+    if (!Array.isArray(d) || !d.length) return [];
+    var rows;
+    if (Array.isArray(d[0])) {
+      var h = d[0], ti = h.indexOf("time_tag"), ki = h.indexOf("kp");
+      rows = d.slice(1).map(function (r) { return { t: r[ti], kp: parseFloat(r[ki]) }; });
+    } else {
+      rows = d.map(function (r) { return { t: r.time_tag, kp: parseFloat(r.kp != null ? r.kp : r.Kp) }; });
+    }
+    return rows.filter(function (r) { return r.t && !isNaN(r.kp); }).map(function (r) {
+      var iso = String(r.t).replace(" ", "T");
+      if (!/(Z|[+-]\d\d:?\d\d)$/.test(iso)) iso += "Z";
+      return { start: new Date(iso), kp: r.kp };
+    });
+  }
+  function loadAurora() {
+    var A = CFG.auroras, el = $("aurora"), info = $("aurora-info");
+    if (!A) { el.hidden = true; return; }
+    var kpReq = fetchJSON("https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json");
+    var cloudReq = fetchJSON("https://api.open-meteo.com/v1/forecast?latitude=" + A.lat + "&longitude=" + A.lon +
+      "&hourly=cloud_cover&forecast_days=2&timezone=" + encodeURIComponent(A.zonaHoraria)).catch(function () { return null; });
+    Promise.all([kpReq, cloudReq]).then(function (res) {
+      var now = Date.now(), bins = parseKp(res[0]), maxKp = null;
+      bins.forEach(function (b) {
+        var mid = b.start.getTime() + 90 * 60000;
+        if (mid < now - 90 * 60000 || mid > now + 24 * 3600000) return;
+        var h = +localParts(A.zonaHoraria, new Date(mid)).hour;
+        if (h >= 20 || h <= 4) maxKp = maxKp === null ? b.kp : Math.max(maxKp, b.kp);
+      });
+      if (maxKp === null) throw new Error("sin datos Kp");
+
+      // Nubosidad media de la próxima noche (21:00 a 04:00)
+      var cloudTxt = "", cl = res[1];
+      if (cl && cl.hourly) {
+        var nowIso = localHourISO(A.zonaHoraria), vals = [];
+        cl.hourly.time.forEach(function (tm, i) {
+          if (tm < nowIso || vals.length >= 8) return;
+          var hh = +tm.slice(11, 13);
+          if (hh >= 21 || hh <= 4) vals.push(cl.hourly.cloud_cover[i]);
+        });
+        if (vals.length) {
+          var avg = Math.round(vals.reduce(function (a, b) { return a + b; }, 0) / vals.length);
+          cloudTxt = " · nubes " + avg + " %";
+        }
+      }
+      var k = Math.round(maxKp), u = A.kpPosible || 5, lvl, txt;
+      if (k < u - 1)        { lvl = 0; txt = "Muy baja"; }
+      else if (k === u - 1) { lvl = 1; txt = "Baja"; }
+      else if (k === u)     { lvl = 2; txt = "Posible"; }
+      else if (k === u + 1) { lvl = 3; txt = "Probable"; }
+      else                  { lvl = 4; txt = "Alta"; }
+      el.className = "trip lvl" + lvl;
+      info.innerHTML = "<strong></strong> · Kp " + nf1.format(maxKp) + cloudTxt;
+      info.querySelector("strong").textContent = txt;
+      el.title = "Índice Kp máximo previsto esta noche en " + A.nombre + ". Mirar hacia el norte, lejos de luces. Fuente: NOAA SWPC.";
+    }).catch(function () {
+      el.className = "trip";
+      info.textContent = "Sin datos en este momento";
+    });
+  }
+
+  /* ---------- Índice UV por hora y calidad del aire (Open-Meteo) ---------- */
+  var UV_TXT = ["bajo", "moderado", "alto", "muy alto", "extremo"];
+  function uvClass(v) { return v < 3 ? 0 : v < 6 ? 1 : v < 8 ? 2 : v < 11 ? 3 : 4; }
+  var AQ_TXT = ["Buena", "Moderada", "Mala para personas sensibles", "Mala", "Muy mala", "Peligrosa"];
+  function aqClass(v) { return v <= 50 ? 0 : v <= 100 ? 1 : v <= 150 ? 2 : v <= 200 ? 3 : v <= 300 ? 4 : 5; }
+  function buildUV() {
+    var wrap = $("uv-wrap");
+    wrap.innerHTML = "";
+    (CFG.uv || []).forEach(function (U, n) {
+      var div = document.createElement("div");
+      div.className = "uv-place";
+      div.innerHTML = '<div class="uv-head"><strong id="uv-name-' + n + '"></strong>' +
+        '<span class="aq" id="aq-' + n + '"><span class="dot" aria-hidden="true"></span><span id="aq-text-' + n + '">Cargando aire…</span></span></div>' +
+        '<div class="uv-bar" id="uv-bar-' + n + '"><p class="status">Cargando índice UV…</p></div>' +
+        '<p class="uv-note small muted" id="uv-note-' + n + '"></p>';
+      wrap.appendChild(div);
+      $("uv-name-" + n).textContent = U.nombre;
+    });
+  }
+  buildUV();
+
+  function loadUV() {
+    (CFG.uv || []).forEach(function (U, n) {
+      fetchJSON("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + U.lat + "&longitude=" + U.lon +
+        "&current=us_aqi&hourly=uv_index&forecast_days=1&timezone=" + encodeURIComponent(U.zonaHoraria))
+        .then(function (d) {
+          var nowH = +localParts(U.zonaHoraria).hour, html = "", maxV = -1, maxH = null;
+          d.hourly.time.forEach(function (tm, i) {
+            var h = +tm.slice(11, 13), v = d.hourly.uv_index[i];
+            if (v != null && v > maxV) { maxV = v; maxH = h; }
+            if (h < U.horaInicio || h > U.horaFin) return;
+            html += '<div class="uv-cell' + (h === nowH ? " now" : "") + '">' +
+              '<span class="uv-val uv' + (v == null ? 0 : uvClass(v)) + '">' + (v == null ? "—" : Math.round(v)) + "</span>" +
+              '<span class="uv-hour">' + h + "h</span></div>";
+          });
+          $("uv-bar-" + n).innerHTML = html;
+          $("uv-bar-" + n).setAttribute("aria-label", "Índice UV por hora en " + U.nombre);
+          if (maxV >= 0) {
+            $("uv-note-" + n).textContent = "UV máximo " + Math.round(maxV) + " (" + UV_TXT[uvClass(maxV)] + ") hacia las " + maxH + " h. " +
+              (maxV >= 3 ? "Protección solar en las horas amarillas o superiores." : "No hace falta protección solar especial.");
+          }
+          var aq = d.current && d.current.us_aqi;
+          if (aq != null) {
+            var c = aqClass(aq);
+            $("aq-" + n).className = "aq a" + c;
+            $("aq-text-" + n).textContent = "Aire " + Math.round(aq) + " · " + AQ_TXT[c];
+          } else {
+            $("aq-text-" + n).textContent = "Aire: sin datos";
+          }
+        })
+        .catch(function () {
+          $("uv-bar-" + n).innerHTML = '<p class="status warn">No se ha podido cargar el índice UV.</p>';
+          $("aq-text-" + n).textContent = "Aire: sin datos";
+        });
+    });
+  }
+
+  /* ---------- Expresión del día e historial ---------- */
+  var WORDS = window.PALABRAS || [], FRASES = window.FRASES || [], wordIdx = 0;
+  function pick(list, i) { return list[((i % list.length) + list.length) % list.length]; }
+  function dayNumber() {
+    var p = localParts(tzUS);
+    return Math.floor(Date.UTC(+p.year, +p.month - 1, +p.day) / 86400000);   // cambia a medianoche de West Branch
+  }
+  function showWord(i) {
+    var w = pick(WORDS, i);
+    $("word-en").textContent = w.en;
+    $("word-es").textContent = w.es;
+    $("word-ex").textContent = w.ej || "";
+    $("word-ex-es").textContent = w.ejEs || "";
+  }
+  function renderWord() {
+    if (!WORDS.length) { $("word-card").hidden = true; $("history-card").hidden = true; return; }
+    var today = dayNumber();
+    wordIdx = today;
+    $("word-card").hidden = false;
+    showWord(wordIdx);
+
+    // Historial: las expresiones del día de los 5 días anteriores
+    var ul = $("history"), n = Math.min(5, WORDS.length - 1);
+    ul.innerHTML = "";
+    var dfmt = new Intl.DateTimeFormat("es-ES", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+    for (var k = 1; k <= n; k++) {
+      var w = pick(WORDS, today - k), li = document.createElement("li");
+      li.innerHTML = '<span><span class="h-en"></span><br><span class="h-es"></span></span><span class="when"></span>';
+      li.querySelector(".h-en").textContent = w.en;
+      li.querySelector(".h-es").textContent = w.es;
+      li.querySelector(".when").textContent = k === 1 ? "ayer" : dfmt.format(new Date((today - k) * 86400000));
+      ul.appendChild(li);
+    }
+    $("history-card").hidden = n < 1;
+  }
+  $("word-next").addEventListener("click", function () { wordIdx++; showWord(wordIdx); });
+
+  function renderLove() {
+    if (!FRASES.length) { $("love").hidden = true; return; }
+    var f = pick(FRASES, dayNumber());
+    $("love-en").textContent = f.en;
+    $("love-es").textContent = f.es;
+    $("love").hidden = false;
+  }
+
+  /* ---------- Fase lunar (cálculo local, sin conexión) ---------- */
+  function renderMoon() {
+    var SYN = 29.530588853, REF = Date.UTC(2000, 0, 6, 18, 14);           // luna nueva de referencia
+    var p = (((Date.now() - REF) / 86400000 / SYN) % 1 + 1) % 1;
+    var illum = (1 - Math.cos(2 * Math.PI * p)) / 2;
+    var name = p < 0.034 || p > 0.966 ? "Luna nueva" : p < 0.216 ? "Luna creciente" : p < 0.284 ? "Cuarto creciente" :
+               p < 0.466 ? "Gibosa creciente" : p < 0.534 ? "Luna llena" : p < 0.716 ? "Gibosa menguante" :
+               p < 0.784 ? "Cuarto menguante" : "Luna menguante";
+    var r = 7, cx = 8, cy = 8, rx = Math.abs(Math.cos(2 * Math.PI * p)) * r, waxing = p < 0.5;
+    var outer = waxing ? 1 : 0, inner = waxing ? (illum < 0.5 ? 0 : 1) : (illum < 0.5 ? 1 : 0);
+    var lit = illum < 0.01 ? "" :
+      '<path d="M' + cx + "," + (cy - r) + " A" + r + "," + r + " 0 0 " + outer + " " + cx + "," + (cy + r) +
+      " A" + rx.toFixed(2) + "," + r + " 0 0 " + inner + " " + cx + "," + (cy - r) + 'Z" fill="#ece6c8"/>';
+    if (illum > 0.99) lit = '<circle cx="8" cy="8" r="7" fill="#ece6c8"/>';
+    $("moon").innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#4a5163"/>' + lit + "</svg>" +
+      Math.round(illum * 100) + " %";
+    $("moon").title = name + ", iluminada al " + Math.round(illum * 100) + " %. Con mucha luna, las auroras débiles se ven peor.";
+    $("moon").setAttribute("aria-label", $("moon").title);
+  }
+
   /* ---------- Carga y refresco ---------- */
   function loadWeatherAll() {
     [["list-es", CFG.espana], ["list-us", CFG.usa]].forEach(function (pair) {
@@ -886,11 +1175,13 @@
     });
     loadDetail();
     loadAlerts();
+    loadAurora();
+    loadUV();
     $("updated").textContent = "Actualizado a las " + fmtTime(tzUS) + " de " + CFG.usa.ciudadReloj +
       " (" + fmtTime(tzES) + " en " + CFG.espana.ciudadReloj + ")";
   }
   var lastLoad = Date.now();
-  function loadAll() { lastLoad = Date.now(); loadRate(); loadWeatherAll(); renderTrip(); renderDates(); }
+  function loadAll() { lastLoad = Date.now(); loadRate(); loadWeatherAll(); renderTrip(); renderDates(); renderWord(); renderLove(); renderMoon(); }
   $("refresh").addEventListener("click", loadAll);
   loadAll();
   setInterval(loadWeatherAll, 30 * 60 * 1000);

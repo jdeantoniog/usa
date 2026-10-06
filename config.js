@@ -19,6 +19,35 @@ window.CONFIG = {
     fechaAproximada: false         // muestra "aprox." junto a la fecha
   },
 
+  /* ---------- Auroras boreales ----------
+     Se usa el índice Kp máximo previsto para la noche (NOAA).
+     kpPosible: Kp a partir del cual se ven en el horizonte norte.
+     Para West Branch (unos 44° N) el valor razonable es 5.          */
+  auroras: {
+    nombre: "West Branch",
+    lat: 44.2764, lon: -84.2386,
+    zonaHoraria: "America/Detroit",
+    kpPosible: 5
+  },
+
+  /* ---------- Índice UV por hora y calidad del aire (un bloque por lugar) ----------
+     Las horas están centradas en el mediodía solar de cada sitio:
+     West Branch hacia las 13:30 y Madrid hacia las 14:15 (horario de verano). */
+  uv: [
+    {
+      nombre: "West Branch",
+      lat: 44.2764, lon: -84.2386,
+      zonaHoraria: "America/Detroit",
+      horaInicio: 10, horaFin: 17
+    },
+    {
+      nombre: "Madrid (Ciudad Lineal)",
+      lat: 40.4466, lon: -3.6510,
+      zonaHoraria: "Europe/Madrid",
+      horaInicio: 11, horaFin: 18
+    }
+  ],
+
   /* ---------- Divisa ---------- */
   divisa: {
     base: "EUR",
