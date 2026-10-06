@@ -217,9 +217,44 @@
   .day-ico { width: 28px; height: 28px; flex: none; }
   .details .card:first-child { margin-top: 16px; }
 
+  /* ---------- Aviso a pantalla completa ---------- */
+  .splash {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    background:
+      linear-gradient(180deg, var(--es-red) 0 6px, transparent 6px),
+      linear-gradient(0deg, var(--us-blue) 0 6px, transparent 6px),
+      var(--paper);
+    cursor: pointer;
+    opacity: 1; transition: opacity 0.6s ease;
+  }
+  .splash[hidden] { display: none; }
+  .splash.closing { opacity: 0; }
+  .splash-inner { max-width: 640px; text-align: center; animation: splash-in 0.7s ease both; }
+  .splash-text {
+    margin: 0; font-size: clamp(2rem, 9vw, 3.6rem); font-weight: 800;
+    line-height: 1.12; letter-spacing: -0.02em; color: var(--ink);
+  }
+  .splash-hint { margin: 22px 0 0; font-size: 0.85rem; color: var(--muted); }
+  .splash-bar {
+    position: absolute; left: 24px; right: 24px; bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+    height: 4px; border-radius: 2px; background: var(--line); overflow: hidden;
+  }
+  .splash-bar span { display: block; height: 100%; width: 100%; background: var(--es-yellow); transform-origin: left; }
+  @keyframes splash-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .splash, .splash-inner { animation: none; transition: none; }
+  }
+  body.splash-open { overflow: hidden; }
+
   /* ---------- Frase del día ---------- */
   .love { margin: 0 0 14px; text-align: center; font-size: 0.8rem; color: var(--muted); font-style: italic; line-height: 1.35; }
   .love-es { display: block; }
+  .love-es:empty { display: none; }
+  .love.special #love-en { font-style: normal; font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+  .love-pre { display: block; font-style: normal; font-weight: 600; color: var(--es-red); margin-top: 4px; }
+  .love-pre:empty { display: none; }
 
   /* ---------- Luna ---------- */
   .moon { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); margin-left: auto; flex: none; font-variant-numeric: tabular-nums; }
@@ -272,6 +307,7 @@
   .tag.ES { background: var(--es-red); }
   .tag.US { background: var(--us-blue); }
   .tag.Otro { background: var(--muted); }
+  .tag.Fam { background: var(--ok); }
   .when { text-align: right; font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   footer { margin-top: 24px; text-align: center; font-size: 0.8rem; color: var(--muted); }
@@ -310,7 +346,7 @@
 <body>
 <main>
   <!-- Frase cariñosa del día -->
-  <p class="love" id="love" hidden><span id="love-en"></span><span class="love-es" id="love-es"></span></p>
+  <p class="love" id="love" hidden><span id="love-en"></span><span class="love-es" id="love-es"></span><span class="love-pre" id="love-pre"></span></p>
 
   <!-- Banderas y hora -->
   <section aria-label="Hora local">
@@ -466,6 +502,15 @@
   </footer>
 </main>
 
+<!-- Aviso a pantalla completa en fechas clave -->
+<div class="splash" id="splash" role="alert" hidden>
+  <div class="splash-inner">
+    <p class="splash-text" id="splash-text"></p>
+    <p class="splash-hint">Toca para cerrar</p>
+  </div>
+  <div class="splash-bar" aria-hidden="true"><span id="splash-bar"></span></div>
+</div>
+
 <script src="config.js"></script>
 <script src="palabras.js"></script>
 <script>
@@ -591,6 +636,7 @@
   }
   renderTrip();
   setInterval(renderTrip, 60 * 60 * 1000);
+  setInterval(function () { if (typeof renderLove === "function") renderLove(); }, 15 * 60 * 1000);
 
   /* ---------- Euros y dólares ---------- */
   var rate = null;
@@ -946,8 +992,21 @@
   /* ---------- Fechas ---------- */
   function renderDates() {
     var today = new Date(); today.setHours(0, 0, 0, 0);
+    var extra = [];
+    (CFG.mensajesEspeciales || []).forEach(function (x) {
+      if (!x.lista || !x.fecha) return;
+      var f = x.fecha.replace(/\s/g, ""), d;
+      if (f.length === 10) d = localDate(f);
+      else {
+        var mm = +f.slice(0, 2), dd = +f.slice(3, 5);
+        d = new Date(today.getFullYear(), mm - 1, dd);
+        if (d < today) d = new Date(today.getFullYear() + 1, mm - 1, dd);
+      }
+      extra.push({ d: d, f: { pais: "Fam", nombre: x.lista } });
+    });
     var items = (CFG.fechas || [])
       .map(function (f) { return { d: localDate(f.fecha), f: f }; })
+      .concat(extra)
       .filter(function (x) { return x.d >= today; })
       .sort(function (a, b) { return a.d - b.d; })
       .slice(0, CFG.mostrarFechas || 6);
@@ -961,8 +1020,9 @@
     items.forEach(function (x) {
       var days = Math.round((x.d - today) / 86400000);
       var li = document.createElement("li");
-      var label = x.f.pais === "ES" ? "ES" : x.f.pais === "US" ? "US" : "Otro";
-      li.innerHTML = '<span class="tag ' + label + '">' + (label === "Otro" ? "Nota" : label) + "</span>" +
+      var label = x.f.pais === "ES" ? "ES" : x.f.pais === "US" ? "US" : x.f.pais === "Fam" ? "Fam" : "Otro";
+      var tagTxt = label === "Otro" ? "Nota" : label === "Fam" ? "Fam" : label;
+      li.innerHTML = '<span class="tag ' + label + '">' + tagTxt + "</span>" +
         "<span></span>" +
         '<span class="when">' + dfmt.format(x.d) + "<br>" + (days === 0 ? "hoy" : days === 1 ? "mañana" : "en " + days + " días") + "</span>";
       li.children[1].textContent = x.f.nombre;
@@ -1136,8 +1196,62 @@
   }
   $("word-next").addEventListener("click", function () { wordIdx++; showWord(wordIdx); });
 
+  // Mensajes especiales: "MM-DD" (cada año), "AAAA-MM-DD" (un día concreto)
+  // o regla de festivo móvil { mes, diaSemana (0 domingo ... 6 sábado), orden (1-5, o -1 = último) }.
+  // zona: "westbranch" (por defecto), "madrid" o "ambas" (vale el día en cualquiera de las dos).
+  function ymdIn(tz, offsetDays) {
+    var d = new Date(Date.now() + (offsetDays || 0) * 86400000), p = localParts(tz, d);
+    return { y: +p.year, m: +p.month, d: +p.day, mmdd: p.month + "-" + p.day, full: p.year + "-" + p.month + "-" + p.day };
+  }
+  function matches(x, t) {
+    if (x.fecha) { var f = x.fecha.replace(/\s/g, ""); return f === t.mmdd || f === t.full; }
+    if (x.regla) {
+      var r = x.regla, wd = new Date(Date.UTC(t.y, t.m - 1, t.d)).getUTCDay();
+      var dim = new Date(Date.UTC(t.y, t.m, 0)).getUTCDate();
+      if (r.mes !== t.m || r.diaSemana !== wd) return false;
+      return r.orden === -1 ? t.d + 7 > dim : Math.ceil(t.d / 7) === r.orden;
+    }
+    return false;
+  }
+  function zonesOf(x) {
+    return x.zona === "madrid" ? [tzES] : x.zona === "ambas" ? [tzES, tzUS] : [tzUS];
+  }
+  function messagesFor(offsetDays) {
+    return (CFG.mensajesEspeciales || []).filter(function (x) {
+      return zonesOf(x).some(function (tz) { return matches(x, ymdIn(tz, offsetDays)); });
+    });
+  }
+  function specialMessage() {
+    var hit = messagesFor(0);
+    return hit.length ? hit.map(function (x) { return x.texto; }).join("  ·  ") : null;
+  }
+  // Aviso previo: cumpleaños y fechas marcadas con "lista" en los próximos N días
+  function preNotice() {
+    var N = CFG.avisoPrevioDias || 0, out = [];
+    for (var k = 1; k <= N; k++) {
+      messagesFor(k).forEach(function (x) {
+        if (!x.lista || !x.avisar) return;
+        // evita repetir si ese mensaje ya está activo hoy (caso zona "ambas")
+        if (messagesFor(0).indexOf(x) !== -1) return;
+        if (out.some(function (o) { return o.x === x; })) return;
+        out.push({ x: x, k: k });
+      });
+    }
+    return out.map(function (o) { return (o.k === 1 ? "Mañana" : "En " + o.k + " días") + ": " + o.x.lista.charAt(0).toLowerCase() + o.x.lista.slice(1); }).join("  ·  ");
+  }
+
   function renderLove() {
-    if (!FRASES.length) { $("love").hidden = true; return; }
+    var special = specialMessage(), pre = preNotice();
+    $("love-pre").textContent = pre ? "Recuerda. " + pre : "";
+    if (special) {
+      $("love").className = "love special";
+      $("love-en").textContent = special;
+      $("love-es").textContent = "";
+      $("love").hidden = false;
+      return;
+    }
+    $("love").className = "love";
+    if (!FRASES.length) { $("love-en").textContent = ""; $("love-es").textContent = ""; $("love").hidden = !pre; return; }
     var f = pick(FRASES, dayNumber());
     $("love-en").textContent = f.en;
     $("love-es").textContent = f.es;
@@ -1184,6 +1298,40 @@
   function loadAll() { lastLoad = Date.now(); loadRate(); loadWeatherAll(); renderTrip(); renderDates(); renderWord(); renderLove(); renderMoon(); }
   $("refresh").addEventListener("click", loadAll);
   loadAll();
+  showSplash();
+
+  /* ---------- Aviso a pantalla completa en fechas clave ---------- */
+  function showSplash() {
+    var S = CFG.aviso || {};
+    if (S.activo === false) return;
+    var msg = specialMessage();
+    if (!msg) return;
+    var secs = S.segundos || 5;
+    var el = $("splash"), bar = $("splash-bar"), timer;
+    $("splash-text").textContent = msg;
+    el.hidden = false;
+    document.body.classList.add("splash-open");
+    // Barra de cuenta atrás
+    bar.style.transition = "none";
+    bar.style.transform = "scaleX(1)";
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        bar.style.transition = "transform " + secs + "s linear";
+        bar.style.transform = "scaleX(0)";
+      });
+    });
+    function close() {
+      clearTimeout(timer);
+      el.classList.add("closing");
+      setTimeout(function () {
+        el.hidden = true;
+        el.classList.remove("closing");
+        document.body.classList.remove("splash-open");
+      }, 600);
+    }
+    el.addEventListener("click", close, { once: true });
+    timer = setTimeout(close, secs * 1000);
+  }
   setInterval(loadWeatherAll, 30 * 60 * 1000);
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible" && Date.now() - lastLoad > 10 * 60 * 1000) loadAll();

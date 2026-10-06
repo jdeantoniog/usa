@@ -10,6 +10,35 @@
 window.CONFIG = {
   titulo: "Inicio",   // solo se ve en la pestaña y en el icono de la pantalla de inicio
 
+  /* ---------- Mensajes especiales (sustituyen a la frase del día) ----------
+     fecha: "MM-DD"       -> se repite cada año
+     fecha: "AAAA-MM-DD"  -> solo ese día concreto
+     regla: festivos que cambian de día cada año
+            { mes, diaSemana (0 domingo, 1 lunes ... 6 sábado), orden (1 a 5, o -1 = último) }
+     zona:  "westbranch" (por defecto), "madrid" o "ambas".
+            "ambas": se ve desde que empieza el día en Madrid (18:00 del día anterior
+            en West Branch) hasta que acaba en West Branch.
+     lista: texto para "Próximas fechas" (si no se pone, no aparece en la lista).
+     avisar: true -> aviso arriba los días previos (ver avisoPrevioDias).          */
+  avisoPrevioDias: 3,
+  // Aviso grande a pantalla completa al abrir la página en un día con mensaje especial
+  aviso: { activo: true, segundos: 5 },
+  mensajesEspeciales: [
+    { fecha: "01-01", texto: "¡Feliz Año Nuevo! Un beso cariño, ¡qué pena que no estés aquí!" },
+    { fecha: "01-06", texto: "¡Felices Reyes Magos!" },
+    { fecha: "02-28", texto: "¡Feliz cumpleaños Carlotilla!", lista: "Tu cumpleaños" },
+    { fecha: "04-05", texto: "¡Cumpleaños de Celia!", zona: "ambas", lista: "Cumpleaños de Celia", avisar: true },
+    { fecha: "05-16", texto: "¡Cumple de Yeya!", zona: "ambas", lista: "Cumpleaños de Yeya", avisar: true },
+    { fecha: "07-18", texto: "¡Cumple de papi!", zona: "ambas", lista: "Cumpleaños de papi", avisar: true },
+    { fecha: "09-27", texto: "¡Felicita a mamá!", zona: "ambas", lista: "Cumpleaños de mamá", avisar: true },
+    { fecha: "12-25", texto: "¡Feliz Navidad Carlotis! ¡Te quiero cariño!" },
+    { fecha: "2027-06-20", texto: "¡Hoy vuelves a casa! Buen viaje, cariño. ¡Te esperamos con los brazos abiertos!", lista: "Vuelta a casa" },
+    // Tercer lunes de febrero (en 2027 cae el 15)
+    { regla: { mes: 2, diaSemana: 1, orden: 3 }, texto: "¡Día de los Presidentes! Jajaja, ¡qué raros son!" },
+    // Cuarto jueves de noviembre (en 2026 cae el 26)
+    { regla: { mes: 11, diaSemana: 4, orden: 4 }, texto: "¡Feliz Día de Acción de Gracias! Que pases una velada inolvidable dando gracias en familia." }
+  ],
+
   /* ---------- Vuelta a España ---------- */
   viaje: {
     texto: "Vuelta a España",
