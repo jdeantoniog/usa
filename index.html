@@ -4,17 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0e0e10">
 <title>Inicio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&amp;display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #f5f7fb;
+    --paper: #f4f4f3;
     --surface: #ffffff;
-    --ink: #1b2233;
-    --muted: #5d6679;
-    --line: #dde2ec;
+    --ink: #0e0e10;
+    --muted: #5c5c60;
+    --line: #e0e0dd;
+    /* Colores Ogemaw: dorado, gris y negro */
+    --oh-gold: #f4c446;
+    --oh-grey: #4c4c4e;
+    --oh-black: #0e0e10;
+    --oh-on-accent: #f4c446;     /* texto sobre fondo de acento */
+    --oh-accent-bg: #0e0e10;     /* fondo de acento */
     --es-red: #aa151b;
     --es-yellow: #f1bf00;
     --us-blue: #0a3161;
@@ -34,11 +41,13 @@
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --paper: #11151d;
-      --surface: #1a1f2a;
-      --ink: #e9edf4;
-      --muted: #9aa3b5;
-      --line: #2b3242;
+      --paper: #161618;
+      --surface: #232325;
+      --ink: #f2f2f2;
+      --muted: #a3a3a8;
+      --line: #3a3a3d;
+      --oh-on-accent: #0e0e10;
+      --oh-accent-bg: #f4c446;
       --ok: #4cc283;
       --mid: #e0a43a;
       --alert-bg: #3a1a20;
@@ -58,7 +67,7 @@
   }
   main { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
   h1 { font-size: 1rem; font-weight: 600; color: var(--muted); margin: 0 0 14px; text-align: center; }
-  h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 12px; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 12px; padding-left: 10px; border-left: 4px solid var(--oh-gold); line-height: 1.2; }
   .card {
     margin-top: 16px;
     background: var(--surface);
@@ -119,7 +128,7 @@
   /* ---------- Vuelta a España (una línea) ---------- */
   .trip {
     margin-top: 16px; display: flex; align-items: center; gap: 10px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--oh-gold); border-radius: 12px;
     padding: 8px 12px; font-size: 0.9rem; white-space: nowrap;
   }
   .trip-label { font-weight: 700; }
@@ -132,7 +141,7 @@
   .bar[hidden] { display: none; }
   .bar-done {
     position: absolute; inset: 0 auto 0 0; width: 0%;
-    background: var(--us-blue); border-right: 2px solid var(--ink);
+    background: var(--oh-grey); border-right: 2px solid var(--oh-black);
     transition: width 0.8s ease;
   }
   @media (prefers-reduced-motion: reduce) { .bar-done { transition: none; } }
@@ -166,7 +175,7 @@
     font: inherit; font-weight: 600; color: var(--ink); background: var(--paper);
     border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer;
   }
-  .chip[aria-pressed="true"] { background: var(--us-blue); border-color: var(--us-blue); color: #ffffff; }
+  .chip[aria-pressed="true"] { background: var(--oh-accent-bg); border-color: var(--oh-accent-bg); color: var(--oh-on-accent); }
   .chip-custom { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 12px; background: var(--paper); }
   .chip-custom input { width: 3.2em; font-size: 1rem; font-weight: 600; }
   .bill-out { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
@@ -224,8 +233,8 @@
     display: flex; align-items: center; justify-content: center;
     padding: calc(24px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px));
     background:
-      linear-gradient(180deg, var(--es-red) 0 6px, transparent 6px),
-      linear-gradient(0deg, var(--us-blue) 0 6px, transparent 6px),
+      linear-gradient(180deg, var(--oh-gold) 0 8px, var(--oh-black) 8px 12px, transparent 12px),
+      linear-gradient(0deg, var(--oh-gold) 0 8px, var(--oh-black) 8px 12px, transparent 12px),
       var(--paper);
     cursor: pointer;
     opacity: 1; transition: opacity 0.6s ease;
@@ -243,7 +252,7 @@
     position: absolute; left: 24px; right: 24px; bottom: calc(22px + env(safe-area-inset-bottom, 0px));
     height: 4px; border-radius: 2px; background: var(--line); overflow: hidden;
   }
-  .splash-bar span { display: block; height: 100%; width: 100%; background: var(--es-yellow); transform-origin: left; }
+  .splash-bar span { display: block; height: 100%; width: 100%; background: var(--oh-gold); transform-origin: left; }
   @keyframes splash-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
     .splash, .splash-inner { animation: none; transition: none; }
@@ -294,7 +303,9 @@
   .cd-u b { display: block; font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
   .cd-u i { display: block; font-style: normal; font-size: 0.68rem; color: var(--muted); }
   .cd-u.zero b { color: var(--muted); font-weight: 600; }
-  .cd-list li:first-child .cd-u b { color: var(--es-red); }
+  .cd-list li:first-child .cd-u { background: var(--oh-accent-bg); }
+  .cd-list li:first-child .cd-u b, .cd-list li:first-child .cd-u.zero b { color: var(--oh-on-accent); }
+  .cd-list li:first-child .cd-u i { color: var(--oh-on-accent); opacity: 0.75; }
   .cd-today { grid-column: 1 / -1; font-weight: 800; color: var(--es-red); font-size: 1.15rem; }
 
   /* ---------- Auroras ---------- */
@@ -344,8 +355,8 @@
 
   footer { margin-top: 24px; text-align: center; font-size: 0.8rem; color: var(--muted); }
   footer button {
-    font: inherit; color: var(--ink); background: var(--surface);
-    border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+    font: inherit; font-weight: 700; color: var(--oh-on-accent); background: var(--oh-accent-bg);
+    border: 1px solid var(--oh-accent-bg); border-radius: 8px; padding: 8px 16px; cursor: pointer;
   }
   button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
@@ -418,7 +429,7 @@
 
   <!-- Auroras boreales: una línea -->
   <section class="trip" id="aurora" aria-label="Auroras boreales">
-    <span class="trip-label">Auroras esta noche</span>
+    <span class="trip-label">Auroras</span>
     <span class="dot" id="aurora-dot" aria-hidden="true"></span>
     <span class="trip-info" id="aurora-info">Cargando…</span>
     <span class="moon" id="moon"></span>
