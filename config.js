@@ -20,25 +20,33 @@ window.CONFIG = {
             en West Branch) hasta que acaba en West Branch.
      lista: texto para "Próximas fechas" (si no se pone, no aparece en la lista).
      avisar: true -> aviso arriba los días previos (ver avisoPrevioDias).
-     confeti: true -> confeti en el aviso grande de ese día.          */
+     confeti: true -> confeti en el aviso grande de ese día.
+     nombre: cómo aparece en la cuenta atrás (si no, se usa "lista" o el texto).          */
   avisoPrevioDias: 3,
   // Aviso grande a pantalla completa al abrir la página en un día con mensaje especial
   aviso: { activo: true, segundos: 5 },
   mensajesEspeciales: [
-    { fecha: "01-01", texto: "¡Feliz Año Nuevo! Un beso cariño, ¡qué pena que no estés aquí!" },
-    { fecha: "01-06", texto: "¡Felices Reyes Magos!" },
+    { fecha: "01-01", nombre: "Año Nuevo", texto: "¡Feliz Año Nuevo! Un beso cariño, ¡qué pena que no estés aquí!" },
+    { fecha: "01-06", nombre: "Reyes Magos", texto: "¡Felices Reyes Magos!" },
     { fecha: "02-28", texto: "¡Feliz cumpleaños Carlotilla!", lista: "Tu cumpleaños", confeti: true },
     { fecha: "04-05", texto: "¡Cumpleaños de Celia!", zona: "ambas", lista: "Cumpleaños de Celia", avisar: true, confeti: true },
     { fecha: "05-16", texto: "¡Cumple de Yeya!", zona: "ambas", lista: "Cumpleaños de Yeya", avisar: true, confeti: true },
     { fecha: "07-18", texto: "¡Cumple de papi!", zona: "ambas", lista: "Cumpleaños de papi", avisar: true, confeti: true },
     { fecha: "09-27", texto: "¡Felicita a mamá!", zona: "ambas", lista: "Cumpleaños de mamá", avisar: true, confeti: true },
-    { fecha: "12-25", texto: "¡Feliz Navidad Carlotis! ¡Te quiero cariño!" },
+    { fecha: "12-25", nombre: "Navidad", texto: "¡Feliz Navidad Carlotis! ¡Te quiero cariño!" },
     { fecha: "2027-06-20", texto: "¡Hoy vuelves a casa! Buen viaje, cariño. ¡Te esperamos con los brazos abiertos!", lista: "Vuelta a casa" },
     // Tercer lunes de febrero (en 2027 cae el 15)
-    { regla: { mes: 2, diaSemana: 1, orden: 3 }, texto: "¡Día de los Presidentes! Jajaja, ¡qué raros son!" },
+    { regla: { mes: 2, diaSemana: 1, orden: 3 }, nombre: "Presidents' Day", texto: "¡Día de los Presidentes! Jajaja, ¡qué raros son!" },
     // Cuarto jueves de noviembre (en 2026 cae el 26)
-    { regla: { mes: 11, diaSemana: 4, orden: 4 }, texto: "¡Feliz Día de Acción de Gracias! Que pases una velada inolvidable dando gracias en familia." }
+    { regla: { mes: 11, diaSemana: 4, orden: 4 }, nombre: "Thanksgiving", texto: "¡Feliz Día de Acción de Gracias! Que pases una velada inolvidable dando gracias en familia." }
   ],
+
+  /* ---------- Cuenta atrás (al final de la página) ----------
+     Muestra todas las fechas de mensajesEspeciales que caen dentro de maxDias. */
+  cuentaAtras: { maxDias: 365 },
+
+  /* ---------- Horas de luz (línea antes de "Próximos días") ---------- */
+  luz: { nombre: "West Branch", lat: 44.2764, zonaHoraria: "America/Detroit" },
 
   /* ---------- Vuelta a España ---------- */
   viaje: {

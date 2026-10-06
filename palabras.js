@@ -113,3 +113,108 @@ window.FRASES = [
   { en: "Call us whenever you want. Always.", es: "Llámanos cuando quieras. Siempre." },
   { en: "The best stories start far from home.", es: "Las mejores historias empiezan lejos de casa." }
 ];
+
+/* =============================================================
+   PALABRAS DE LA ESTACIÓN (cambian solas según el mes)
+   otoño: sep-nov · invierno: dic-feb · primavera: mar-may · verano: jun-ago
+   ============================================================= */
+window.ESTACIONES = {
+  otono: [
+    { en: "Fall", es: "Otoño (en EE. UU. casi nunca dicen autumn)" },
+    { en: "Leaves / Fall colors", es: "Hojas / Colores del otoño" },
+    { en: "Rake", es: "Rastrillo / Rastrillar" },
+    { en: "Pumpkin patch", es: "Campo de calabazas" },
+    { en: "Corn maze", es: "Laberinto de maíz" },
+    { en: "Apple cider", es: "Zumo de manzana sin filtrar (típico de otoño)" },
+    { en: "Hayride", es: "Paseo en remolque con paja" },
+    { en: "Trick-or-treat", es: "Truco o trato" },
+    { en: "Costume", es: "Disfraz" },
+    { en: "Turkey / Stuffing", es: "Pavo / Relleno" },
+    { en: "Black Friday", es: "Día de rebajas tras Thanksgiving" },
+    { en: "Sweater weather", es: "Tiempo de jersey" }
+  ],
+  invierno: [
+    { en: "Snowstorm / Blizzard", es: "Tormenta de nieve / Ventisca" },
+    { en: "Snowflake", es: "Copo de nieve" },
+    { en: "Sleet", es: "Aguanieve" },
+    { en: "Icicle", es: "Carámbano" },
+    { en: "Slippery", es: "Resbaladizo" },
+    { en: "Wind chill", es: "Sensación térmica por el viento" },
+    { en: "Snow boots", es: "Botas de nieve" },
+    { en: "Sledding", es: "Tirarse en trineo" },
+    { en: "Snowman", es: "Muñeco de nieve" },
+    { en: "Hot cocoa", es: "Chocolate caliente" },
+    { en: "Winter break", es: "Vacaciones de Navidad" },
+    { en: "Ice fishing", es: "Pesca en el hielo (muy típica en Michigan)" }
+  ],
+  primavera: [
+    { en: "Spring break", es: "Vacaciones de primavera" },
+    { en: "Thaw", es: "Deshielo" },
+    { en: "Mud", es: "Barro" },
+    { en: "Bloom", es: "Florecer" },
+    { en: "Rain boots", es: "Botas de agua" },
+    { en: "Allergies / Pollen", es: "Alergias / Polen" },
+    { en: "Easter egg hunt", es: "Búsqueda de huevos de Pascua" },
+    { en: "Prom", es: "Baile de fin de curso" },
+    { en: "Track and field", es: "Atletismo" },
+    { en: "Finals", es: "Exámenes finales" },
+    { en: "Sunscreen", es: "Crema solar" },
+    { en: "Daylight saving time", es: "Horario de verano" }
+  ],
+  verano: [
+    { en: "Summer break", es: "Vacaciones de verano" },
+    { en: "Lake / Beach", es: "Lago / Playa" },
+    { en: "Sunburn", es: "Quemadura solar" },
+    { en: "Mosquito bite", es: "Picadura de mosquito" },
+    { en: "Campfire / S'mores", es: "Hoguera / Galleta con nube y chocolate" },
+    { en: "Fireworks", es: "Fuegos artificiales" },
+    { en: "Fourth of July", es: "4 de julio, Día de la Independencia" },
+    { en: "Graduation", es: "Graduación" },
+    { en: "Yearbook", es: "Anuario del instituto" },
+    { en: "Goodbye party", es: "Fiesta de despedida" },
+    { en: "Keep in touch", es: "Seguimos en contacto" },
+    { en: "Back home", es: "De vuelta en casa" }
+  ]
+};
+
+/* =============================================================
+   VOCABULARIO DE HIGH SCHOOL
+   ============================================================= */
+window.VOCAB_HS = [
+  { en: "Freshman / Sophomore", es: "1.º / 2.º de high school (9th / 10th grade)" },
+  { en: "Junior / Senior", es: "3.º / 4.º de high school (11th / 12th grade)" },
+  { en: "Homeroom", es: "Tutoría / Clase de referencia" },
+  { en: "Period", es: "Hora de clase (1st period = primera hora)" },
+  { en: "Schedule", es: "Horario" },
+  { en: "Counselor", es: "Orientador/a" },
+  { en: "Principal", es: "Director/a del centro" },
+  { en: "Hall pass", es: "Permiso para salir de clase" },
+  { en: "Locker", es: "Taquilla" },
+  { en: "Tardy", es: "Retraso (llegar tarde a clase)" },
+  { en: "Detention", es: "Castigo después de clase" },
+  { en: "Assignment / Homework", es: "Tarea / Deberes" },
+  { en: "Due date", es: "Fecha de entrega" },
+  { en: "Quiz / Test", es: "Control corto / Examen" },
+  { en: "Midterm / Final", es: "Examen parcial / Examen final" },
+  { en: "Grade", es: "Nota (y también curso: 10th grade)" },
+  { en: "GPA", es: "Nota media" },
+  { en: "Report card", es: "Boletín de notas" },
+  { en: "Extra credit", es: "Puntos extra" },
+  { en: "Elective", es: "Asignatura optativa" },
+  { en: "Credit", es: "Crédito (asignatura aprobada)" },
+  { en: "Cafeteria / Lunch line", es: "Comedor / Cola del comedor" },
+  { en: "Study hall", es: "Hora de estudio" },
+  { en: "Substitute (sub)", es: "Profesor/a sustituto/a" },
+  { en: "Bus pass / Bus stop", es: "Pase de autobús / Parada" },
+  { en: "Pep rally", es: "Acto de animación antes de un partido" },
+  { en: "Homecoming", es: "Semana y baile de bienvenida en otoño" },
+  { en: "Spirit week", es: "Semana temática (disfraces cada día)" },
+  { en: "Varsity / JV", es: "Equipo principal / Equipo júnior" },
+  { en: "Tryouts", es: "Pruebas para entrar en un equipo" },
+  { en: "Club", es: "Club o actividad extraescolar" },
+  { en: "Field trip", es: "Excursión escolar" },
+  { en: "Snow day", es: "Día sin clase por nieve" },
+  { en: "Pledge of Allegiance", es: "Juramento a la bandera por la mañana" },
+  { en: "Prom", es: "Baile de fin de curso" },
+  { en: "Graduation / Cap and gown", es: "Graduación / Birrete y toga" }
+];

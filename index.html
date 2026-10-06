@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
 <title>Inicio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -266,6 +267,36 @@
   .hist .h-en { font-weight: 600; }
   .hist .h-es { color: var(--muted); font-size: 0.9rem; }
 
+  /* ---------- Luz del día ---------- */
+  .trip.light { white-space: normal; align-items: baseline; flex-wrap: wrap; row-gap: 2px; line-height: 1.35; }
+  .trip.light .trip-info strong { color: var(--ink); }
+
+  /* ---------- Listas de vocabulario ---------- */
+  .vlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .vlist li { padding: 8px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; }
+  .vlist li:nth-child(-n+2) { border-top: 0; }
+  .v-en { font-weight: 700; }
+  .v-es { color: var(--muted); font-size: 0.88rem; }
+  @media (max-width: 520px) {
+    .vlist { grid-template-columns: 1fr; }
+    .vlist li:nth-child(2) { border-top: 1px solid var(--line); }
+  }
+
+  /* ---------- Cuenta atrás ---------- */
+  .cd-list { list-style: none; margin: 0; padding: 0; }
+  .cd-list li { padding: 12px 0; border-top: 1px solid var(--line); }
+  .cd-list li:first-child { border-top: 0; padding-top: 0; }
+  .cd-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+  .cd-name { font-weight: 700; }
+  .cd-date { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+  .cd-units { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+  .cd-u { background: var(--paper); border-radius: 8px; padding: 6px 2px; text-align: center; font-variant-numeric: tabular-nums; }
+  .cd-u b { display: block; font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
+  .cd-u i { display: block; font-style: normal; font-size: 0.68rem; color: var(--muted); }
+  .cd-u.zero b { color: var(--muted); font-weight: 600; }
+  .cd-list li:first-child .cd-u b { color: var(--es-red); }
+  .cd-today { grid-column: 1 / -1; font-weight: 800; color: var(--es-red); font-size: 1.15rem; }
+
   /* ---------- Auroras ---------- */
   #aurora { margin-top: 8px; }
   #aurora .dot { background: var(--muted); }
@@ -429,6 +460,12 @@
   </section>
 
   <!-- Previsión detallada: una tarjeta por cada lugar de "detalles" en config.js -->
+  <!-- Luz del día: una línea -->
+  <section class="trip light" id="light" aria-label="Horas de luz" hidden>
+    <span class="trip-label" id="light-label">Luz</span>
+    <span class="trip-info" id="light-info"></span>
+  </section>
+
   <div id="details"></div>
 
   <!-- Palabra o expresión del día -->
@@ -495,6 +532,24 @@
   <section class="card" id="history-card" aria-labelledby="history-title" hidden>
     <h2 id="history-title">Últimas expresiones</h2>
     <ul class="list hist" id="history"></ul>
+  </section>
+
+  <!-- Palabras de la estación -->
+  <section class="card" id="season-card" aria-labelledby="season-title" hidden>
+    <h2 id="season-title">Palabras de la estación</h2>
+    <ul class="vlist" id="season-list"></ul>
+  </section>
+
+  <!-- Vocabulario de high school -->
+  <section class="card" id="vocab-card" aria-labelledby="vocab-title" hidden>
+    <h2 id="vocab-title">Vocabulario de high school</h2>
+    <ul class="vlist" id="vocab-list"></ul>
+  </section>
+
+  <!-- Cuenta atrás a fechas significativas -->
+  <section class="card" id="cd-card" aria-labelledby="cd-title" hidden>
+    <h2 id="cd-title">Cuenta atrás</h2>
+    <ul class="cd-list" id="cd-list"></ul>
   </section>
 
   <footer>
@@ -1280,6 +1335,176 @@
     $("moon").setAttribute("aria-label", $("moon").title);
   }
 
+  /* ---------- Luz del día (cálculo astronómico local, sin conexión) ---------- */
+  function dayLengthMin(lat, y, m, d) {
+    var n = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 86400000);
+    var g = 2 * Math.PI / 365 * (n - 1);
+    var de = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) +
+             0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    var phi = lat * Math.PI / 180;
+    var c = (Math.sin(-0.833 * Math.PI / 180) - Math.sin(phi) * Math.sin(de)) / (Math.cos(phi) * Math.cos(de));
+    c = Math.max(-1, Math.min(1, c));
+    return 2 * Math.acos(c) * 180 / Math.PI / 15 * 60;
+  }
+  function fmtHM(min) { var h = Math.floor(min / 60), mm = Math.round(min - h * 60); if (mm === 60) { h++; mm = 0; } return h + " h " + mm + " min"; }
+  function fmtMS(sec) { sec = Math.round(Math.abs(sec)); var m = Math.floor(sec / 60), s = sec % 60; return (m ? m + " min " : "") + s + " s"; }
+  function renderLight() {
+    var L = CFG.luz;
+    if (!L) { $("light").hidden = true; return; }
+    var p = localParts(L.zonaHoraria), y = +p.year, m = +p.month, d = +p.day;
+    var today = dayLengthMin(L.lat, y, m, d);
+    var yd = new Date(Date.UTC(y, m - 1, d - 1));
+    var yesterday = dayLengthMin(L.lat, yd.getUTCFullYear(), yd.getUTCMonth() + 1, yd.getUTCDate());
+    var diffSec = (today - yesterday) * 60;
+    var todayUTC = Date.UTC(y, m - 1, d);
+    // Solsticios: invierno el 21 de diciembre, verano el 21 de junio
+    var winter = Date.UTC(m === 12 && d >= 21 ? y : (m <= 6 ? y - 1 : y), 11, 21);
+    var gaining = diffSec > 0;
+    var info;
+    if (gaining) {
+      var wy = new Date(winter).getUTCFullYear();
+      var since = today - dayLengthMin(L.lat, wy, 12, 21);
+      info = "<strong>Ganando luz</strong> · " + fmtHM(today) + " hoy · <strong>+" + fmtMS(diffSec) + "</strong> que ayer · +" +
+             Math.round(since) + " min desde el 21 dic";
+    } else {
+      var nextWinter = Date.UTC(m === 12 && d > 21 ? y + 1 : y, 11, 21);
+      var daysTo = Math.round((nextWinter - todayUTC) / 86400000);
+      info = fmtHM(today) + " de luz hoy · <strong>" + fmtMS(diffSec) + " menos</strong> que ayer · " +
+             (daysTo === 0 ? "hoy es el día más corto; desde mañana gana luz" : "empieza a ganar luz en " + daysTo + (daysTo === 1 ? " día" : " días"));
+    }
+    $("light-label").textContent = "Luz en " + L.nombre;
+    $("light-info").innerHTML = info;
+    $("light").hidden = false;
+  }
+
+  /* ---------- Palabras de la estación y vocabulario de high school ---------- */
+  function fillWordList(ul, list) {
+    ul.innerHTML = "";
+    list.forEach(function (w) {
+      var li = document.createElement("li");
+      li.innerHTML = '<span class="v-en"></span><span class="v-es"></span>';
+      li.children[0].textContent = w.en;
+      li.children[1].textContent = w.es;
+      ul.appendChild(li);
+    });
+  }
+  function renderSeason() {
+    var E = window.ESTACIONES;
+    if (!E) { $("season-card").hidden = true; return; }
+    var m = +localParts(tzUS).month;
+    var key = m >= 3 && m <= 5 ? "primavera" : m >= 6 && m <= 8 ? "verano" : m >= 9 && m <= 11 ? "otono" : "invierno";
+    var names = { primavera: "primavera", verano: "verano", otono: "otoño", invierno: "invierno" };
+    var list = E[key] || [];
+    if (!list.length) { $("season-card").hidden = true; return; }
+    $("season-title").textContent = "Palabras del " + names[key];
+    fillWordList($("season-list"), list);
+    $("season-card").hidden = false;
+  }
+  function renderVocab() {
+    var V = window.VOCAB_HS || [];
+    if (!V.length) { $("vocab-card").hidden = true; return; }
+    fillWordList($("vocab-list"), V);
+    $("vocab-card").hidden = false;
+  }
+
+  /* ---------- Cuenta atrás a fechas significativas (máximo 1 año) ---------- */
+  // Medianoche (inicio del día) de una fecha en una zona horaria, como instante absoluto
+  function midnightIn(tz, y, m, d) {
+    var guess = Date.UTC(y, m - 1, d, 0, 0);
+    for (var i = 0; i < 2; i++) {
+      var p = localParts(tz, new Date(guess));
+      var shown = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, 0);
+      guess -= shown - Date.UTC(y, m - 1, d, 0, 0);
+    }
+    return guess;
+  }
+  function nthWeekday(y, r) {
+    var dim = new Date(Date.UTC(y, r.mes, 0)).getUTCDate(), days = [];
+    for (var d = 1; d <= dim; d++) if (new Date(Date.UTC(y, r.mes - 1, d)).getUTCDay() === r.diaSemana) days.push(d);
+    return r.orden === -1 ? days[days.length - 1] : days[r.orden - 1];
+  }
+  function nextOccurrences() {
+    var now = Date.now(), maxMs = (CFG.cuentaAtras && CFG.cuentaAtras.maxDias || 365) * 86400000, out = [];
+    var yNow = +localParts(tzUS).year;
+    (CFG.mensajesEspeciales || []).forEach(function (x) {
+      var tz = x.zona === "madrid" || x.zona === "ambas" ? tzES : tzUS;
+      var cands = [];
+      if (x.fecha) {
+        var f = x.fecha.replace(/\s/g, "");
+        if (f.length === 10) cands.push([+f.slice(0, 4), +f.slice(5, 7), +f.slice(8, 10)]);
+        else [yNow, yNow + 1].forEach(function (y) { cands.push([y, +f.slice(0, 2), +f.slice(3, 5)]); });
+      } else if (x.regla) {
+        [yNow, yNow + 1].forEach(function (y) { cands.push([y, x.regla.mes, nthWeekday(y, x.regla)]); });
+      }
+      var best = null;
+      cands.forEach(function (c) {
+        var start = midnightIn(tz, c[0], c[1], c[2]);
+        var end = midnightIn(x.zona === "ambas" ? tzUS : tz, c[0], c[1], c[2]) + 86400000;
+        if (end <= now || start - now > maxMs) return;
+        if (!best || start < best.start) best = { start: start, end: end, ymd: c };
+      });
+      if (best) out.push({ name: x.nombre || x.lista || x.texto, start: best.start, ymd: best.ymd, today: best.start <= now });
+    });
+    return out.sort(function (a, b) { return a.start - b.start; });
+  }
+  function addMonths(t, n) {
+    var d = new Date(t), day = d.getDate();
+    d.setDate(1); d.setMonth(d.getMonth() + n);
+    var dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(day, dim));
+    return d.getTime();
+  }
+  function breakdown(from, to) {
+    var months = 0, cur = from;
+    while (addMonths(from, months + 1) <= to) months++;
+    cur = addMonths(from, months);
+    var rest = Math.floor((to - cur) / 1000);
+    var weeks = Math.floor(rest / 604800); rest -= weeks * 604800;
+    var days = Math.floor(rest / 86400); rest -= days * 86400;
+    var hours = Math.floor(rest / 3600); rest -= hours * 3600;
+    var mins = Math.floor(rest / 60), secs = rest - mins * 60;
+    return [months, weeks, days, hours, mins, secs];
+  }
+  var cdItems = [];
+  var CD_LABELS = [["mes", "meses"], ["sem", "sem"], ["día", "días"], ["h", "h"], ["min", "min"], ["s", "s"]];
+  function buildCountdown() {
+    cdItems = nextOccurrences();
+    var ul = $("cd-list");
+    ul.innerHTML = "";
+    if (!cdItems.length) { $("cd-card").hidden = true; return; }
+    var dfmt = new Intl.DateTimeFormat("es-ES", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+    cdItems.forEach(function (it, i) {
+      var li = document.createElement("li");
+      li.innerHTML = '<div class="cd-head"><span class="cd-name"></span><span class="cd-date"></span></div>' +
+        '<div class="cd-units" id="cd-' + i + '"></div>';
+      li.querySelector(".cd-name").textContent = it.name;
+      li.querySelector(".cd-date").textContent = dfmt.format(new Date(Date.UTC(it.ymd[0], it.ymd[1] - 1, it.ymd[2])));
+      ul.appendChild(li);
+    });
+    $("cd-card").hidden = false;
+    tickCountdown();
+  }
+  function tickCountdown() {
+    var now = Date.now(), rebuild = false;
+    cdItems.forEach(function (it, i) {
+      var el = $("cd-" + i);
+      if (!el) return;
+      if (it.start <= now) {
+        if (!it.today) rebuild = true;
+        el.innerHTML = '<span class="cd-today">¡Es hoy!</span>';
+        return;
+      }
+      var b = breakdown(now, it.start), html = "";
+      b.forEach(function (v, k) {
+        html += '<span class="cd-u' + (v === 0 && k < 3 ? " zero" : "") + '"><b>' + (k >= 3 ? String(v).padStart(2, "0") : v) +
+                "</b><i>" + CD_LABELS[k][v === 1 ? 0 : 1] + "</i></span>";
+      });
+      el.innerHTML = html;
+    });
+    if (rebuild) buildCountdown();
+  }
+  setInterval(function () { if (!$("cd-card").hidden) tickCountdown(); }, 1000);
+
   /* ---------- Carga y refresco ---------- */
   function loadWeatherAll() {
     [["list-es", CFG.espana], ["list-us", CFG.usa]].forEach(function (pair) {
@@ -1297,7 +1522,7 @@
       " (" + fmtTime(tzES) + " en " + CFG.espana.ciudadReloj + ")";
   }
   var lastLoad = Date.now();
-  function loadAll() { lastLoad = Date.now(); loadRate(); loadWeatherAll(); renderTrip(); renderDates(); renderWord(); renderLove(); renderMoon(); }
+  function loadAll() { lastLoad = Date.now(); loadRate(); loadWeatherAll(); renderTrip(); renderDates(); renderWord(); renderLove(); renderMoon(); renderLight(); renderSeason(); renderVocab(); buildCountdown(); }
   $("refresh").addEventListener("click", loadAll);
   loadAll();
   showSplash();
