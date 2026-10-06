@@ -19,18 +19,19 @@ window.CONFIG = {
             "ambas": se ve desde que empieza el día en Madrid (18:00 del día anterior
             en West Branch) hasta que acaba en West Branch.
      lista: texto para "Próximas fechas" (si no se pone, no aparece en la lista).
-     avisar: true -> aviso arriba los días previos (ver avisoPrevioDias).          */
+     avisar: true -> aviso arriba los días previos (ver avisoPrevioDias).
+     confeti: true -> confeti en el aviso grande de ese día.          */
   avisoPrevioDias: 3,
   // Aviso grande a pantalla completa al abrir la página en un día con mensaje especial
   aviso: { activo: true, segundos: 5 },
   mensajesEspeciales: [
     { fecha: "01-01", texto: "¡Feliz Año Nuevo! Un beso cariño, ¡qué pena que no estés aquí!" },
     { fecha: "01-06", texto: "¡Felices Reyes Magos!" },
-    { fecha: "02-28", texto: "¡Feliz cumpleaños Carlotilla!", lista: "Tu cumpleaños" },
-    { fecha: "04-05", texto: "¡Cumpleaños de Celia!", zona: "ambas", lista: "Cumpleaños de Celia", avisar: true },
-    { fecha: "05-16", texto: "¡Cumple de Yeya!", zona: "ambas", lista: "Cumpleaños de Yeya", avisar: true },
-    { fecha: "07-18", texto: "¡Cumple de papi!", zona: "ambas", lista: "Cumpleaños de papi", avisar: true },
-    { fecha: "09-27", texto: "¡Felicita a mamá!", zona: "ambas", lista: "Cumpleaños de mamá", avisar: true },
+    { fecha: "02-28", texto: "¡Feliz cumpleaños Carlotilla!", lista: "Tu cumpleaños", confeti: true },
+    { fecha: "04-05", texto: "¡Cumpleaños de Celia!", zona: "ambas", lista: "Cumpleaños de Celia", avisar: true, confeti: true },
+    { fecha: "05-16", texto: "¡Cumple de Yeya!", zona: "ambas", lista: "Cumpleaños de Yeya", avisar: true, confeti: true },
+    { fecha: "07-18", texto: "¡Cumple de papi!", zona: "ambas", lista: "Cumpleaños de papi", avisar: true, confeti: true },
+    { fecha: "09-27", texto: "¡Felicita a mamá!", zona: "ambas", lista: "Cumpleaños de mamá", avisar: true, confeti: true },
     { fecha: "12-25", texto: "¡Feliz Navidad Carlotis! ¡Te quiero cariño!" },
     { fecha: "2027-06-20", texto: "¡Hoy vuelves a casa! Buen viaje, cariño. ¡Te esperamos con los brazos abiertos!", lista: "Vuelta a casa" },
     // Tercer lunes de febrero (en 2027 cae el 15)
