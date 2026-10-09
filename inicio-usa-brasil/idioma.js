@@ -57,7 +57,7 @@ window.TEXTOS = {
   dolares: "Dólares", millas: "Milhas", kilometros: "Quilômetros", fahrenheit: "Fahrenheit", celsius: "Celsius",
   libras: "Libras", kilos: "Quilos", onzas: "Onças", gramos: "Gramas", pulgadas: "Polegadas", centimetros: "Centímetros",
   mph: "Milhas por hora", kmh: "Km por hora",
-  bMillas: "Milhas / km", bLibras: "Libras / quilos", bOnzas: "Onças / gramas", bPulgadas: "Polegadas / cm",
+  bMillas: "Milhas / km", bYardas: "Jardas / m", bTazas: "Xícaras / ml", tazas: "Xícaras (cup)", mililitros: "Mililitros", notaTaza: "Xícara de cozinha dos EUA. Nos rótulos nutricionais arredonda-se para 240 ml.", bGalones: "Galões / litros", galones: "Galões", litros: "Litros", notaGalon: "Galão dos EUA (gasolina, leite). O galão britânico tem 4,55 litros.", yardas: "Jardas", metros: "Metros", bLibras: "Libras / quilos", bOnzas: "Onças / gramas", bPulgadas: "Polegadas / cm",
   notaOnza: "Onça de peso. A onça líquida (fl oz) tem 29,57 ml.",
   cargandoCambio: "Carregando a cotação…", bce: "taxa de referência do BCE", tasaGuardada: "sem conexão: cotação salva {0}",
   tasaManual: "sem conexão: cotação manual do config.js, confira", sinCambio: "Sem cotação: não há conexão.",

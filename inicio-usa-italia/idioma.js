@@ -57,7 +57,7 @@ window.TEXTOS = {
   dolares: "Dollari", millas: "Miglia", kilometros: "Chilometri", fahrenheit: "Fahrenheit", celsius: "Celsius",
   libras: "Libbre", kilos: "Chili", onzas: "Once", gramos: "Grammi", pulgadas: "Pollici", centimetros: "Centimetri",
   mph: "Miglia orarie", kmh: "Km orari",
-  bMillas: "Miglia / km", bLibras: "Libbre / chili", bOnzas: "Once / grammi", bPulgadas: "Pollici / cm",
+  bMillas: "Miglia / km", bYardas: "Iarde / m", bTazas: "Tazze / ml", tazas: "Tazze (cup)", mililitros: "Millilitri", notaTaza: "Tazza da cucina americana. Sulle etichette nutrizionali si arrotonda a 240 ml.", bGalones: "Galloni / litri", galones: "Galloni", litros: "Litri", notaGalon: "Gallone americano (benzina, latte). Il gallone britannico è 4,55 litri.", yardas: "Iarde", metros: "Metri", bLibras: "Libbre / chili", bOnzas: "Once / grammi", bPulgadas: "Pollici / cm",
   notaOnza: "Oncia di peso. L'oncia liquida (fl oz) è 29,57 ml.",
   cargandoCambio: "Caricamento del tasso di cambio…", bce: "tasso di riferimento BCE", tasaGuardada: "senza connessione: tasso salvato {0}",
   tasaManual: "senza connessione: tasso manuale di config.js, controllalo", sinCambio: "Nessun tasso di cambio: manca la connessione.",

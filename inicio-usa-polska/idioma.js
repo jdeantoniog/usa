@@ -57,7 +57,7 @@ window.TEXTOS = {
   dolares: "Dolary", millas: "Mile", kilometros: "Kilometry", fahrenheit: "Fahrenheit", celsius: "Celsjusz",
   libras: "Funty", kilos: "Kilogramy", onzas: "Uncje", gramos: "Gramy", pulgadas: "Cale", centimetros: "Centymetry",
   mph: "Mile na godzinę", kmh: "Km na godzinę",
-  bMillas: "Mile / km", bLibras: "Funty / kg", bOnzas: "Uncje / gramy", bPulgadas: "Cale / cm",
+  bMillas: "Mile / km", bYardas: "Jardy / m", bTazas: "Kubki / ml", tazas: "Kubki (cup)", mililitros: "Mililitry", notaTaza: "Amerykańska miarka kuchenna. Na etykietach z wartościami odżywczymi zaokrągla się do 240 ml.", bGalones: "Galony / litry", galones: "Galony", litros: "Litry", notaGalon: "Galon amerykański (benzyna, mleko). Galon brytyjski to 4,55 litra.", yardas: "Jardy", metros: "Metry", bLibras: "Funty / kg", bOnzas: "Uncje / gramy", bPulgadas: "Cale / cm",
   notaOnza: "Uncja wagowa. Uncja płynów (fl oz) to 29,57 ml.",
   cargandoCambio: "Ładowanie kursu walut…", bce: "kurs referencyjny EBC", tasaGuardada: "brak połączenia: zapisany kurs {0}",
   tasaManual: "brak połączenia: kurs ręczny z config.js, sprawdź go", sinCambio: "Brak kursu: nie ma połączenia.",

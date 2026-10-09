@@ -129,6 +129,7 @@
     border: 1px solid var(--line); border-radius: 10px; padding: 9px 4px; cursor: pointer; min-width: 0; overflow-wrap: anywhere;
   }
   .conv-btn.main { grid-column: 1 / -1; font-size: 0.95rem; padding: 11px 4px; }
+  .conv-btn:last-child:nth-child(even) { grid-column: 1 / -1; }
   .conv-btn[aria-pressed="true"] { background: var(--oh-accent-bg); border-color: var(--oh-accent-bg); color: var(--oh-on-accent); }
   .conv-out { display: grid; gap: 6px; }
   .field label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 3px; }
@@ -671,6 +672,17 @@
     "mph": "Millas por hora",
     "kmh": "Km por hora",
     "bMillas": "Millas / km",
+    "bYardas": "Yardas / m",
+    "bTazas": "Tazas / ml",
+    "tazas": "Tazas",
+    "mililitros": "Mililitros",
+    "notaTaza": "Taza de cocina de EE. UU. En las etiquetas nutricionales se redondea a 240 ml.",
+    "bGalones": "Galones / litros",
+    "galones": "Galones",
+    "litros": "Litros",
+    "notaGalon": "Galón de EE. UU. (gasolina, leche). El galón británico son 4,55 litros.",
+    "yardas": "Yardas",
+    "metros": "Metros",
     "bLibras": "Libras / kilos",
     "bOnzas": "Onzas / gramos",
     "bPulgadas": "Pulgadas / cm",
@@ -1614,11 +1626,14 @@
     { id: "money", btn: T.dolares + " / " + MON.nombre.toLowerCase(), main: true, a: T.dolares, sa: "$", b: MON.nombre, sb: MON.simbolo, money: true,
       conv: { toB: function (x) { return rate ? x * rate : NaN; }, toA: function (x) { return rate ? x / rate : NaN; } } },
     { id: "mi", btn: T.bMillas, a: T.millas, sa: "mi", b: T.kilometros, sb: "km", conv: lin(1.609344) },
+    { id: "yd", btn: T.bYardas, a: T.yardas, sa: "yd", b: T.metros, sb: "m", conv: lin(0.9144) },
     { id: "f", btn: "°F / °C", a: T.fahrenheit, sa: "°F", b: T.celsius, sb: "°C",
       conv: { toB: function (x) { return (x - 32) * 5 / 9; }, toA: function (x) { return x * 9 / 5 + 32; } } },
     { id: "lb", btn: T.bLibras, a: T.libras, sa: "lb", b: T.kilos, sb: "kg", conv: lin(0.45359237) },
     { id: "oz", btn: T.bOnzas, a: T.onzas, sa: "oz", b: T.gramos, sb: "g", conv: lin(28.349523125) },
+    { id: "cup", btn: T.bTazas, a: T.tazas, sa: "cup", b: T.mililitros, sb: "ml", conv: lin(236.5882365) },
     { id: "in", btn: T.bPulgadas, a: T.pulgadas, sa: "in", b: T.centimetros, sb: "cm", conv: lin(2.54) },
+    { id: "gal", btn: T.bGalones, a: T.galones, sa: "gal", b: T.litros, sb: "l", conv: lin(3.785411784) },
     { id: "mph", btn: "mph / km/h", a: T.mph, sa: "mph", b: T.kmh, sb: "km/h", conv: lin(1.609344) }
   ];
   var convCur = CONV[0], convA = $("conv-a"), convB = $("conv-b"), rateTxt = T.cargandoCambio, rateWarn = false;
@@ -1646,7 +1661,7 @@
     else { var r2 = u.conv.toA(parseNum(convB.value)); convA.value = isNaN(r2) ? "" : fmt.format(r2); }
     var note = $("conv-note");
     note.className = "rate" + (u.money && rateWarn ? " warn" : "");
-    note.textContent = u.money ? rateTxt : u.id === "oz" ? T.notaOnza : "";
+    note.textContent = u.money ? rateTxt : u.id === "oz" ? T.notaOnza : u.id === "cup" ? T.notaTaza : u.id === "gal" ? T.notaGalon : "";
   }
   convA.addEventListener("input", function () { setConv("a"); });
   convB.addEventListener("input", function () { setConv("b"); });
